@@ -1,0 +1,57 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Deno: Run Current Day",
+      "request": "launch",
+      "type": "node",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "run",
+        "--inspect-brk",
+        "--allow-read"
+      ],
+      "program": "${workspaceFolder}/src/main.ts",
+      "args": ["1"],
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229
+    },
+    {
+      "name": "Deno: Run Specific Day",
+      "request": "launch",
+      "type": "node",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "run",
+        "--inspect-brk",
+        "--allow-read"
+      ],
+      "program": "${workspaceFolder}/src/main.ts",
+      "args": ["${input:dayNumber}"],
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229
+    },
+    {
+      "name": "Deno: Test Current File",
+      "request": "launch",
+      "type": "node",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "--allow-read"
+      ],
+      "program": "${file}",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229
+    }
+  ],
+  "inputs": [
+    {
+      "id": "dayNumber",
+      "type": "promptString",
+      "description": "Enter the day number (1-25)",
+      "default": "1"
+    }
+  ]
+}
