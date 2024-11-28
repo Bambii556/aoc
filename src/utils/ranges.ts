@@ -46,6 +46,18 @@ export function rangesOverlap(
 /**
  * Merges overlapping ranges into a minimal set of non-overlapping ranges.
  *
+ * When to use:
+ * - Overlapping intervals
+ * - Time slot merging
+ * - Range consolidation
+ * - Coverage calculation
+ *
+ * When not to use:
+ * - Non-overlapping ranges
+ * - Need to preserve original ranges
+ * - Need to track individual ranges
+ * - Ranges have additional metadata
+ *
  * @example
  * mergeRanges([[1,3], [2,6], [8,10], [15,18]])
  * // Returns [[1,6], [8,10], [15,18]]

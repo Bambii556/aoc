@@ -8,6 +8,20 @@
 /**
  * A* pathfinding algorithm implementation.
  *
+ * When to use:
+ * - Need optimal path with weighted edges
+ * - Have a good heuristic estimate to goal
+ * - Grid/maze navigation with varying costs
+ * - Large search spaces where efficiency matters
+ * - Need to consider movement costs + distance to goal
+ *
+ * When not to use:
+ * - No good heuristic available
+ * - Unweighted graphs (use BFS instead)
+ * - Need all possible paths
+ * - Memory constrained (stores lots of state)
+ * - Small search spaces (BFS might be simpler)
+ *
  * @param start - Starting node
  * @param goal - Target node
  * @param getNeighbors - Function that returns neighboring nodes
@@ -73,6 +87,16 @@ export function aStar(
 /**
  * Helper function for A* to find node with lowest fScore.
  *
+ * When to use:
+ * - Part of A* implementation
+ * - Need min value from score map
+ * - Priority queue not available
+ *
+ * When not to use:
+ * - Large sets (use PriorityQueue)
+ * - Different scoring system
+ * - Need multiple min values
+ *
  * @example
  * const openSet = new Set(['A', 'B', 'C']);
  * const fScore = new Map([['A',10], ['B',5], ['C',8]]);
@@ -97,6 +121,16 @@ function getLowestFScore(
 /**
  * Helper function for A* to reconstruct path from cameFrom map.
  *
+ * When to use:
+ * - After A* finds goal
+ * - Need full path from start to end
+ * - Using parent pointer approach
+ *
+ * When not to use:
+ * - Only need distance
+ * - Different path format needed
+ * - Memory constraints
+ *
  * @example
  * const cameFrom = new Map([['B','A'], ['C','B']]);
  * reconstructPath(cameFrom, 'C') // Returns ['A', 'B', 'C']
@@ -116,6 +150,18 @@ function reconstructPath(
 /**
  * Dijkstra's shortest path algorithm implementation.
  * Finds shortest distances from start node to all other nodes.
+ *
+ * When to use:
+ * - Edges have different weights
+ * - Finding shortest path with costs
+ * - Network/routing problems
+ * - Need minimum cost path
+ *
+ * When not to use:
+ * - Unweighted graphs (use BFS)
+ * - Negative edge weights (use Bellman-Ford)
+ * - Need all paths
+ * - Memory constrained
  *
  * @param start - Starting node
  * @param graph - Map where keys are nodes and values are Maps of neighbor->weight
@@ -141,37 +187,25 @@ export function dijkstra(
   graph: Map<number, Map<number, number>>,
 ): Map<number, number> {
   const distances = new Map<number, number>();
-  const visited = new Set<number>();
-  const nodes = Array.from(graph.keys());
+  const pq = new PriorityQueue<number>();
 
-  // Initialize all distances to Infinity
-  nodes.forEach((node) => distances.set(node, Infinity));
+  // Initialize
   distances.set(start, 0);
+  pq.push(0, start);
 
-  while (visited.size < nodes.length) {
-    // Find closest unvisited node
-    let closest = -1;
-    let closestDistance = Infinity;
-    for (const node of nodes) {
-      if (
-        !visited.has(node) &&
-        (distances.get(node) || Infinity) < closestDistance
-      ) {
-        closest = node;
-        closestDistance = distances.get(node) || Infinity;
-      }
-    }
+  while (!pq.isEmpty()) {
+    const current = pq.pop()!;
+    const currentDist = distances.get(current)!;
 
-    if (closest === -1) break; // No reachable nodes left
-    visited.add(closest); // Mark as visited
+    const neighbors = graph.get(current);
+    if (!neighbors) continue;
 
-    // Update distances to all neighbors
-    const neighbors = graph.get(closest) || new Map();
-    for (const [neighbor, weight] of neighbors.entries()) {
-      if (visited.has(neighbor)) continue;
-      const distance = closestDistance + weight;
-      if (distance < (distances.get(neighbor) || Infinity)) {
+    for (const [neighbor, weight] of neighbors) {
+      const distance = currentDist + weight;
+
+      if (!distances.has(neighbor) || distance < distances.get(neighbor)!) {
         distances.set(neighbor, distance);
+        pq.push(distance, neighbor);
       }
     }
   }
@@ -182,6 +216,18 @@ export function dijkstra(
 /**
  * Breadth-First Search implementation that returns shortest path.
  * Useful for finding shortest path in unweighted graphs.
+ *
+ * When to use:
+ * - Finding shortest path
+ * - All edges have equal weight
+ * - Need level-by-level traversal
+ * - Grid/maze navigation
+ *
+ * When not to use:
+ * - Edges have different weights (use Dijkstra)
+ * - Need all possible paths (use DFS)
+ * - Memory constrained (large graphs)
+ * - Need path with specific constraints
  *
  * @param start - Starting node
  * @param target - Target node to find
@@ -197,24 +243,26 @@ export function bfs(
   target: string,
   getNeighbors: (node: string) => string[],
 ): string[] | null {
-  const queue: string[] = [start]; // Queue of nodes to visit
-  const visited = new Set([start]); // Track visited nodes
-  const parent = new Map<string, string>(); // Track path
+  const queue: string[] = [start];
+  const visited = new Set([start]);
+  const parent = new Map<string, string>();
 
-  while (queue.length > 0) {
-    const current = queue.shift()!; // Get next node to explore
+  let queueIndex = 0; // Track position in queue array
+
+  while (queueIndex < queue.length) {
+    const current = queue[queueIndex++];
     if (current === target) {
-      // Found target, reconstruct path
-      const path: string[] = [current];
+      // Reconstruct path
+      const path: string[] = [];
       let node = current;
-      while (parent.has(node)) {
-        node = parent.get(node)!;
+      while (node !== start) {
         path.unshift(node);
+        node = parent.get(node)!;
       }
+      path.unshift(start);
       return path;
     }
 
-    // Explore neighbors
     for (const neighbor of getNeighbors(current)) {
       if (!visited.has(neighbor)) {
         visited.add(neighbor);
@@ -223,5 +271,77 @@ export function bfs(
       }
     }
   }
-  return null; // No path found
+
+  return null;
+}
+
+class PriorityQueue<T> {
+  private heap: [number, T][] = [];
+
+  push(priority: number, value: T) {
+    const element: [number, T] = [priority, value];
+    this.heap.push(element);
+    this.bubbleUp(this.heap.length - 1);
+  }
+
+  pop(): T | undefined {
+    if (this.heap.length === 0) return undefined;
+
+    const result = this.heap[0][1];
+    const last = this.heap.pop()!;
+
+    if (this.heap.length > 0) {
+      this.heap[0] = last;
+      this.bubbleDown(0);
+    }
+
+    return result;
+  }
+
+  isEmpty(): boolean {
+    return this.heap.length === 0;
+  }
+
+  private bubbleUp(index: number) {
+    while (index > 0) {
+      const parentIndex = (index - 1) >>> 1;
+      if (this.heap[parentIndex][0] <= this.heap[index][0]) break;
+
+      [this.heap[parentIndex], this.heap[index]] = [
+        this.heap[index],
+        this.heap[parentIndex],
+      ];
+      index = parentIndex;
+    }
+  }
+
+  private bubbleDown(index: number) {
+    while (true) {
+      let smallest = index;
+      const leftChild = (index << 1) + 1;
+      const rightChild = leftChild + 1;
+
+      if (
+        leftChild < this.heap.length &&
+        this.heap[leftChild][0] < this.heap[smallest][0]
+      ) {
+        smallest = leftChild;
+      }
+
+      if (
+        rightChild < this.heap.length &&
+        this.heap[rightChild][0] < this.heap[smallest][0]
+      ) {
+        smallest = rightChild;
+      }
+
+      if (smallest === index) break;
+
+      [this.heap[index], this.heap[smallest]] = [
+        this.heap[smallest],
+        this.heap[index],
+      ];
+      index = smallest;
+    }
+  }
 }

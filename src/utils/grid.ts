@@ -11,13 +11,9 @@
  * @example
  * getAdjacent(1, 1) // Returns [[1,0], [2,1], [1,2], [0,1]]
  */
+const ADJACENT_COORDS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 export function getAdjacent(x: number, y: number): [number, number][] {
-  return [
-    [x, y - 1], // up
-    [x + 1, y], // right
-    [x, y + 1], // down
-    [x - 1, y], // left
-  ];
+  return ADJACENT_COORDS.map(([dx, dy]) => [x + dx, y + dy]);
 }
 
 /**
@@ -28,20 +24,21 @@ export function getAdjacent(x: number, y: number): [number, number][] {
  * getAdjacentWithDiagonals(1, 1)
  * // Returns [[0,0], [1,0], [2,0], [0,1], [2,1], [0,2], [1,2], [2,2]]
  */
+const DIAGONAL_COORDS = [
+  [-1, -1],
+  [0, -1],
+  [1, -1],
+  [-1, 0],
+  [1, 0],
+  [-1, 1],
+  [0, 1],
+  [1, 1],
+];
 export function getAdjacentWithDiagonals(
   x: number,
   y: number,
 ): [number, number][] {
-  return [
-    [x - 1, y - 1], // up-left
-    [x, y - 1], // up
-    [x + 1, y - 1], // up-right
-    [x - 1, y], // left
-    [x + 1, y], // right
-    [x - 1, y + 1], // down-left
-    [x, y + 1], // down
-    [x + 1, y + 1], // down-right
-  ];
+  return DIAGONAL_COORDS.map(([dx, dy]) => [x + dx, y + dy]);
 }
 
 /**
@@ -53,9 +50,13 @@ export function getAdjacentWithDiagonals(
  * isInBounds(0, 0, grid) // true
  * isInBounds(2, 2, grid) // false
  */
-// deno-lint-ignore no-explicit-any
-export function isInBounds(x: number, y: number, grid: any[][]): boolean {
-  return x >= 0 && x < grid[0].length && y >= 0 && y < grid.length;
+export function isInBounds(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+): boolean {
+  return x >= 0 && x < width && y >= 0 && y < height;
 }
 
 /**
@@ -88,8 +89,11 @@ export function pointToString(x: number, y: number): string {
  * - Converting stored points back to coordinates
  * - Processing point data from string format
  */
-export function stringToPoint(str: string): [number, number] {
-  const [x, y] = str.split(",").map(Number);
+export function stringToPoint(
+  str: string,
+  delimiter: string = ",",
+): [number, number] {
+  const [x, y] = str.split(delimiter).map(Number);
   return [x, y];
 }
 
@@ -97,6 +101,20 @@ export function stringToPoint(str: string): [number, number] {
  * Calculate Manhattan distance between two points.
  * Manhattan distance is the sum of absolute differences of coordinates.
  * Also known as L1 distance or taxicab distance.
+ *
+ * When to use:
+ * - Grid-based movement with only cardinal directions (no diagonals)
+ * - Finding minimum steps between points on a grid
+ * - Distance calculations in maze/path problems
+ * - When diagonal movement is not allowed
+ * - Computing distances in 2D coordinate systems
+ *
+ * When not to use:
+ * - Diagonal movement is allowed (use Euclidean distance)
+ * - Need exact geometric distance
+ * - Working in 3D space
+ * - Need curved/non-grid paths
+ * - When movement costs are not uniform
  *
  * @example
  * manhattanDistance(1, 1, 4, 5) // Returns 7

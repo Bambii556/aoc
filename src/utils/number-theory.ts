@@ -18,15 +18,12 @@
  * - Checking divisibility properties
  */
 export function isPrime(n: number): boolean {
-  // Handle base cases
-  if (n <= 1) return false;
-  if (n <= 3) return true;
-
-  // Quick check for even numbers and multiples of 3
+  if (n <= 3) return n > 1;
   if (n % 2 === 0 || n % 3 === 0) return false;
 
-  // Check all potential factors of form 6k±1 up to sqrt(n)
-  for (let i = 5; i * i <= n; i += 6) {
+  // Use wheel factorization with 2,3,5
+  const limit = Math.sqrt(n);
+  for (let i = 5; i <= limit; i += 6) {
     if (n % i === 0 || n % (i + 2) === 0) return false;
   }
   return true;

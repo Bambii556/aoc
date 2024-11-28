@@ -12,11 +12,11 @@
  * countOccurrences(['a','b','a'], 'a') // Returns 2
  */
 export function countOccurrences<T>(array: T[], value: T): number {
-  return array.filter((item) => item === value).length;
+  return array.reduce((count, item) => count + (item === value ? 1 : 0), 0);
 }
 
 /**
- * Calculates the sum of all numbers in an array.
+ * Calculates the sum (+) of all numbers in an array.
  *
  * @example
  * sum([1,2,3,4]) // Returns 10
@@ -26,7 +26,7 @@ export function sum(numbers: number[]): number {
 }
 
 /**
- * Calculates the product of all numbers in an array.
+ * Calculates the product (*) of all numbers in an array.
  *
  * @example
  * product([2,3,4]) // Returns 24
@@ -44,11 +44,24 @@ export function product(numbers: number[]): number {
  * // Returns [12, -2]
  */
 export function findNumbers(text: string): number[] {
-  return [...text.matchAll(/-?\d+/g)].map((match) => parseInt(match[0]));
+  const matches = text.match(/-?\d+/g);
+  return matches ? matches.map(Number) : [];
 }
 
 /**
  * Creates a frequency map counting occurrences of each unique item.
+ *
+ * When to use:
+ * - Counting occurrences
+ * - Need item frequencies
+ * - Pattern matching
+ * - Histogram creation
+ *
+ * When not to use:
+ * - Only need single item count
+ * - Memory constrained
+ * - Need sorted frequencies
+ * - Need index positions
  *
  * @example
  * getFrequencyMap(['a','b','a','c','b'])

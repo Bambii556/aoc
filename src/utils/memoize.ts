@@ -9,6 +9,18 @@
  * Creates a memoized version of any function.
  * Caches results based on stringified arguments.
  *
+ * When to use:
+ * - Expensive recursive calculations
+ * - Pure functions
+ * - Repeated calls with same args
+ * - Dynamic programming
+ *
+ * When not to use:
+ * - Functions with side effects
+ * - Memory constrained
+ * - Arguments not serializable
+ * - Random/time-dependent functions
+ *
  * @example
  * const expensiveCalc = (n: number) => { ''complex calculation'' };
  * const memoizedCalc = memoize(expensiveCalc);
