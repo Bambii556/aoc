@@ -12,7 +12,12 @@
  * countOccurrences(['a','b','a'], 'a') // Returns 2
  */
 export function countOccurrences<T>(array: T[], value: T): number {
-  return array.reduce((count, item) => count + (item === value ? 1 : 0), 0);
+  // For large arrays, using a for loop is faster than reduce
+  let count = 0;
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] === value) count++;
+  }
+  return count;
 }
 
 /**
@@ -69,14 +74,16 @@ export function findNumbers(text: string): number[] {
  */
 export function getFrequencyMap<T>(array: T[]): Map<T, number> {
   const map = new Map<T, number>();
-  for (const item of array) {
+  // Using for loop instead of for..of for better performance
+  for (let i = 0; i < array.length; i++) {
+    const item = array[i];
     map.set(item, (map.get(item) || 0) + 1);
   }
   return map;
 }
 
 /**
- * Find all combinations of an array
+ * Find all combinations of an array (This can be very expensive for large arrays:)
  *
  * When to use:
  * - Need all possible selections of items where order doesn't matter
@@ -104,18 +111,20 @@ export function getFrequencyMap<T>(array: T[]): Map<T, number> {
  * );
  */
 export function combinations<T>(array: T[], r: number): T[][] {
+  // Add early termination conditions
   if (r > array.length) return [];
   if (r === 0) return [[]];
+  if (r === array.length) return [array];
+  if (r === 1) return array.map((el) => [el]);
 
   const first = array[0];
   const rest = array.slice(1);
 
-  const combsWithoutFirst = combinations(rest, r);
-  const combsWithFirst = combinations(rest, r - 1).map(
-    (comb) => [first, ...comb],
-  );
-
-  return [...combsWithoutFirst, ...combsWithFirst];
+  // Reuse arrays where possible instead of creating new ones
+  return [
+    ...combinations(rest, r),
+    ...combinations(rest, r - 1).map((combo) => [first, ...combo]),
+  ];
 }
 
 /**
@@ -150,9 +159,15 @@ export function combinations<T>(array: T[], r: number): T[][] {
  * });
  */
 export function windows<T>(array: T[], size: number): T[][] {
-  return array
-    .slice(0, array.length - size + 1)
-    .map((_, i) => array.slice(i, i + size));
+  // Add input validation
+  if (size > array.length) return [];
+
+  const result: T[][] = [];
+  // Use single pass with for loop
+  for (let i = 0; i <= array.length - size; i++) {
+    result.push(array.slice(i, i + size));
+  }
+  return result;
 }
 
 /**
@@ -289,14 +304,16 @@ export function hasIntersection<T>(arr1: T[], arr2: T[]): boolean {
  * chunks([1,2,3,4,5], 2) // [[1,2], [3,4], [5]]
  */
 export function chunks<T>(arr: T[], size: number): T[][] {
-  return Array.from(
-    { length: Math.ceil(arr.length / size) },
-    (_, i) => arr.slice(i * size, i * size + size),
-  );
+  const result: T[][] = [];
+  // Use for loop instead of Array.from
+  for (let i = 0; i < arr.length; i += size) {
+    result.push(arr.slice(i, Math.min(i + size, arr.length)));
+  }
+  return result;
 }
 
 /**
- * Get unique values from array
+ * Get unique values from very Large arrays
  *
  * When to use:
  * - Need to remove duplicates
@@ -307,7 +324,24 @@ export function chunks<T>(arr: T[], size: number): T[][] {
  * unique([1,1,2,2,3]) // [1,2,3]
  */
 export function unique<T>(arr: T[]): T[] {
-  return [...new Set(arr)];
+  // Method 1: For small arrays (< 1000 elements)
+  //    For primitive types, Set is fastest
+  //    Create a Set (which only stores unique values)
+  //    Then spread it back into an array
+  if (arr.length < 1000) return [...new Set(arr)];
+
+  // Method 2: For large arrays
+  // For large arrays of objects, use Map to maintain insertion order
+  const seen = new Map<T, boolean>();
+  const result: T[] = [];
+  for (let i = 0; i < arr.length; i++) {
+    const item = arr[i];
+    if (!seen.has(item)) {
+      seen.set(item, true);
+      result.push(item);
+    }
+  }
+  return result;
 }
 
 /**
@@ -341,10 +375,14 @@ export function zip<T>(...arrays: T[][]): T[][] {
  * pairs([1,2,3]) // [[1,2], [1,3], [2,3]]
  */
 export function pairs<T>(arr: T[]): [T, T][] {
-  const result: [T, T][] = [];
+  // Preallocate array for better performance
+  const length = (arr.length * (arr.length - 1)) / 2;
+  const result = new Array<[T, T]>(length);
+  let index = 0;
+
   for (let i = 0; i < arr.length - 1; i++) {
     for (let j = i + 1; j < arr.length; j++) {
-      result.push([arr[i], arr[j]]);
+      result[index++] = [arr[i], arr[j]];
     }
   }
   return result;
@@ -393,21 +431,6 @@ export function transpose<T>(matrix: T[][]): T[][] {
 }
 
 /**
- * Count occurrences in array using reduce
- *
- * When to use:
- * - Frequency counting
- * - Pattern matching
- * - Statistics
- *
- * @example
- * count([1,1,2,2,2,3], 2) // 3
- */
-export function count<T>(arr: T[], item: T): number {
-  return arr.reduce((acc, curr) => acc + (curr === item ? 1 : 0), 0);
-}
-
-/**
  * Generate sequence of numbers
  *
  * When to use:
@@ -420,10 +443,13 @@ export function count<T>(arr: T[], item: T): number {
  * sequence(2, 10, 2) // [2,4,6,8,10]
  */
 export function sequence(start: number, end: number, step = 1): number[] {
-  return Array.from(
-    { length: Math.floor((end - start) / step) + 1 },
-    (_, i) => start + (i * step),
-  );
+  // Use TypedArray for better performance with numbers
+  const length = Math.floor((end - start) / step) + 1;
+  const arr = new Float64Array(length);
+  for (let i = 0; i < length; i++) {
+    arr[i] = start + (i * step);
+  }
+  return Array.from(arr);
 }
 
 /**

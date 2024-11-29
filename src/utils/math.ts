@@ -1,11 +1,26 @@
 /**
- * Math Helper Functions
- * --------------------
- * Common mathematical operations needed in AOC puzzles
- */
-
-/**
- * Calculates the Greatest Common Divisor of two numbers using Euclidean algorithm.
+ * Binary GCD Algorithm (Binary Euclidean Algorithm)
+ * Finds the largest number that divides both inputs with no remainder
+ *
+ * Detailed explanation:
+ * 1. Take absolute values of inputs (GCD is always positive)
+ * 2. Remove common factors of 2 using bit shifting:
+ *    - a >>= 1 means divide by 2
+ *    - (a | b) & 1 checks if both numbers are even
+ * 3. Keep track of removed 2s in 'shift'
+ * 4. Remove remaining factors of 2 from each number
+ * 5. Subtract smaller from larger until one becomes 0
+ * 6. Multiply result by 2^shift to restore common factors
+ *
+ * Example walkthrough:
+ * gcd(48, 18):
+ * 1. 48 = 110000₂, 18 = 10010₂
+ * 2. Both even: shift = 1, a = 24, b = 9
+ * 3. a = 24 (even), a = 12, then 6, then 3
+ * 4. Now: a = 3, b = 9
+ * 5. Swap so a = 9, b = 3
+ * 6. Subtract: b = 6, then 3, then 0
+ * 7. Result: 3 * 2^1 = 6
  *
  * When to use:
  * - Finding common factors
@@ -55,8 +70,25 @@ export function gcd(a: number, b: number): number {
 }
 
 /**
- * Calculates the Least Common Multiple of two numbers.
- * Uses the formula: LCM(a,b) = |a*b|/GCD(a,b)
+ * Least Common Multiple
+ * Finds smallest number divisible by both inputs
+ * Uses the relationship: LCM(a,b) = |a*b|/GCD(a,b)
+ *
+ * Detailed explanation:
+ * 1. Multiply the numbers together
+ * 2. Divide by their GCD
+ * 3. Take absolute value for positive result
+ *
+ * Example walkthrough:
+ * lcm(4, 6):
+ * 1. Multiply: 4 * 6 = 24
+ * 2. Find GCD(4, 6) = 2
+ * 3. Result: 24/2 = 12
+ *
+ * Visual representation:
+ * 4: |----|----|----| (marks at 4, 8, 12)
+ * 6: |---------|---| (marks at 6, 12)
+ * First common mark is at 12
  *
  * When to use:
  * - Finding common cycle lengths
@@ -80,8 +112,29 @@ export function lcm(a: number, b: number): number {
 }
 
 /**
+ * LCM for multiple numbers
  * Calculates the LCM of an array of numbers by repeatedly applying lcm().
  * Useful when finding cycle lengths in puzzle patterns.
+ *
+ * Finds smallest number divisible by all inputs
+ *
+ * Detailed explanation:
+ * Uses reduce to repeatedly apply LCM:
+ * 1. Start with first number
+ * 2. Find LCM with second number
+ * 3. Take that result and find LCM with third number
+ * 4. Continue until all numbers processed
+ *
+ * Example walkthrough:
+ * lcmArray([4, 6, 8]):
+ * 1. First pair: lcm(4, 6) = 12
+ * 2. Result with next: lcm(12, 8) = 24
+ *
+ * Visual representation:
+ * 4: |----|----|----|----|----|----|
+ * 6: |---------|---------|---------|
+ * 8: |-----------|-----------|
+ * All align at 24
  *
  * When to use:
  * - Multiple cycle synchronization
@@ -105,20 +158,23 @@ export function lcmArray(numbers: number[]): number {
 }
 
 /**
- * Generates all possible permutations of an array.
- * Uses recursive algorithm where each element takes turns being first.
+ * Generate all permutations of an array
+ * Optimized version using Heap's Algorithm
+ *
+ * Performance characteristics:
+ * - Time: O(n!) - can't avoid this as it's generating all permutations
+ * - Space: O(n) - better than O(n!) of recursive version
  *
  * When to use:
  * - Need all possible arrangements
- * - Testing all combinations
+ * - Array size <= 8 (8! = 40320 permutations)
  * - Order matters
- * - Array size < 10 (reasonable performance)
+ * - Performance is critical
  *
  * When not to use:
- * - Large arrays (factorial growth)
- * - Order doesn't matter (use combinations)
- * - Need partial permutations
- * - Memory constrained
+ * - Arrays longer than 8 elements
+ * - Only need some permutations
+ * - Order doesn't matter
  *
  * @example
  * getPermutations([1, 2]) // Returns [[1,2], [2,1]]
@@ -131,6 +187,44 @@ export function lcmArray(numbers: number[]): number {
  *   - Add current element to front of each sub-permutation
  */
 export function getPermutations<T>(array: T[]): T[][] {
+  if (array.length <= 1) return [array.slice()];
+  if (array.length > 8) {
+    // throw new Error("Array too large, permutations would exceed 40320");
+    return getPermutationsLarger(array);
+  }
+
+  const result: T[][] = [];
+  const len = array.length;
+  const c = new Array(len).fill(0);
+
+  // Add first permutation
+  result.push(array.slice());
+
+  let i = 0;
+  while (i < len) {
+    if (c[i] < i) {
+      // Swap elements
+      const k = i % 2 && c[i];
+      const temp = array[i];
+      array[i] = array[k];
+      array[k] = temp;
+
+      // Add new permutation
+      result.push(array.slice());
+
+      // Increment count
+      c[i]++;
+      i = 0;
+    } else {
+      c[i] = 0;
+      i++;
+    }
+  }
+
+  return result;
+}
+
+function getPermutationsLarger<T>(array: T[]): T[][] {
   if (array.length <= 1) return [array];
 
   const result: T[][] = [];

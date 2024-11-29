@@ -3,6 +3,7 @@
  * -----------------------
  * A* is like Dijkstra's but uses a heuristic to guide the search
  * towards the goal, making it more efficient for point-to-point pathfinding.
+ * Uses optimized PriorityQueue and Map operations
  */
 
 /**
@@ -48,74 +49,42 @@ export function aStar(
   heuristic: (node: string) => number,
   distance: (a: string, b: string) => number,
 ): string[] | null {
-  const openSet = new Set([start]);
+  const pq = new PriorityQueue<string>();
   const cameFrom = new Map<string, string>();
+  const gScore = new Map<string, number>();
+  const closed = new Set<string>();
 
-  const gScore = new Map<string, number>(); // Distance from start to node
   gScore.set(start, 0);
+  pq.push(heuristic(start), start);
 
-  const fScore = new Map<string, number>(); // gScore + heuristic
-  fScore.set(start, heuristic(start));
-
-  while (openSet.size > 0) {
-    const current = getLowestFScore(openSet, fScore);
+  while (!pq.isEmpty()) {
+    const current = pq.pop()!;
 
     if (current === goal) {
       return reconstructPath(cameFrom, current);
     }
 
-    openSet.delete(current);
+    if (closed.has(current)) continue;
+    closed.add(current);
+
+    const currentGScore = gScore.get(current)!;
 
     for (const neighbor of getNeighbors(current)) {
-      // tentative_gScore = distance from start to neighbor through current
-      const tentativeGScore = gScore.get(current)! +
-        distance(current, neighbor);
+      if (closed.has(neighbor)) continue;
 
-      if (!gScore.has(neighbor) || tentativeGScore < gScore.get(neighbor)!) {
-        // This path to neighbor is better than any previous one
+      const tentativeGScore = currentGScore + distance(current, neighbor);
+      const neighborGScore = gScore.get(neighbor) ?? Infinity;
+
+      if (tentativeGScore < neighborGScore) {
         cameFrom.set(neighbor, current);
         gScore.set(neighbor, tentativeGScore);
-        fScore.set(neighbor, tentativeGScore + heuristic(neighbor));
-        openSet.add(neighbor);
+        const fScore = tentativeGScore + heuristic(neighbor);
+        pq.push(fScore, neighbor);
       }
     }
   }
 
-  return null; // No path found
-}
-
-/**
- * Helper function for A* to find node with lowest fScore.
- *
- * When to use:
- * - Part of A* implementation
- * - Need min value from score map
- * - Priority queue not available
- *
- * When not to use:
- * - Large sets (use PriorityQueue)
- * - Different scoring system
- * - Need multiple min values
- *
- * @example
- * const openSet = new Set(['A', 'B', 'C']);
- * const fScore = new Map([['A',10], ['B',5], ['C',8]]);
- * getLowestFScore(openSet, fScore) // Returns 'B'
- */
-function getLowestFScore(
-  openSet: Set<string>,
-  fScore: Map<string, number>,
-): string {
-  let lowest = Infinity;
-  let lowestNode = "";
-  for (const node of openSet) {
-    const score = fScore.get(node) ?? Infinity;
-    if (score < lowest) {
-      lowest = score;
-      lowestNode = node;
-    }
-  }
-  return lowestNode;
+  return null;
 }
 
 /**
@@ -139,12 +108,23 @@ function reconstructPath(
   cameFrom: Map<string, string>,
   current: string,
 ): string[] {
-  const path = [current];
+  const path = new Array<string>(cameFrom.size + 1);
+  let pathLength = 0;
+
   while (cameFrom.has(current)) {
+    path[pathLength++] = current;
     current = cameFrom.get(current)!;
-    path.unshift(current);
   }
-  return path;
+  path[pathLength++] = current;
+
+  // Reverse in place
+  for (let i = 0; i < pathLength >> 1; i++) {
+    const temp = path[i];
+    path[i] = path[pathLength - 1 - i];
+    path[pathLength - 1 - i] = temp;
+  }
+
+  return path.slice(0, pathLength);
 }
 
 /**
@@ -186,31 +166,41 @@ export function dijkstra(
   start: number,
   graph: Map<number, Map<number, number>>,
 ): Map<number, number> {
-  const distances = new Map<number, number>();
+  const distances = new Map<string, number>();
   const pq = new PriorityQueue<number>();
+  const visited = new Set<number>();
 
-  // Initialize
-  distances.set(start, 0);
+  distances.set(start.toString(), 0);
   pq.push(0, start);
 
   while (!pq.isEmpty()) {
     const current = pq.pop()!;
-    const currentDist = distances.get(current)!;
 
+    if (visited.has(current)) continue;
+    visited.add(current);
+
+    const currentDist = distances.get(current.toString())!;
     const neighbors = graph.get(current);
+
     if (!neighbors) continue;
 
     for (const [neighbor, weight] of neighbors) {
-      const distance = currentDist + weight;
+      if (visited.has(neighbor)) continue;
 
-      if (!distances.has(neighbor) || distance < distances.get(neighbor)!) {
-        distances.set(neighbor, distance);
+      const distance = currentDist + weight;
+      const neighborKey = neighbor.toString();
+      const existingDist = distances.get(neighborKey) ?? Infinity;
+
+      if (distance < existingDist) {
+        distances.set(neighborKey, distance);
         pq.push(distance, neighbor);
       }
     }
   }
 
-  return distances;
+  return new Map(
+    Array.from(distances.entries()).map(([k, v]) => [parseInt(k), v]),
+  );
 }
 
 /**
@@ -243,31 +233,28 @@ export function bfs(
   target: string,
   getNeighbors: (node: string) => string[],
 ): string[] | null {
-  const queue: string[] = [start];
+  // Pre-allocate arrays for better performance
+  const queue = new Array<string>(1000);
+  let front = 0;
+  let rear = 0;
+
+  queue[rear++] = start;
+
   const visited = new Set([start]);
   const parent = new Map<string, string>();
 
-  let queueIndex = 0; // Track position in queue array
+  while (front < rear) {
+    const current = queue[front++];
 
-  while (queueIndex < queue.length) {
-    const current = queue[queueIndex++];
     if (current === target) {
-      // Reconstruct path
-      const path: string[] = [];
-      let node = current;
-      while (node !== start) {
-        path.unshift(node);
-        node = parent.get(node)!;
-      }
-      path.unshift(start);
-      return path;
+      return reconstructPath(parent, current);
     }
 
     for (const neighbor of getNeighbors(current)) {
       if (!visited.has(neighbor)) {
         visited.add(neighbor);
         parent.set(neighbor, current);
-        queue.push(neighbor);
+        queue[rear++] = neighbor;
       }
     }
   }
@@ -275,22 +262,38 @@ export function bfs(
   return null;
 }
 
+/**
+ * Optimized Priority Queue implementation
+ * Uses binary heap for O(log n) operations
+ */
 class PriorityQueue<T> {
-  private heap: [number, T][] = [];
+  private heap: Array<[number, T]>;
 
-  push(priority: number, value: T) {
-    const element: [number, T] = [priority, value];
-    this.heap.push(element);
-    this.bubbleUp(this.heap.length - 1);
+  constructor(initialCapacity = 16) {
+    // Preallocate array for better performance
+    this.heap = new Array(initialCapacity);
+    this.size = 0;
+  }
+
+  private size: number;
+
+  push(priority: number, value: T): void {
+    if (this.size >= this.heap.length) {
+      this.grow();
+    }
+
+    this.heap[this.size] = [priority, value];
+    this.bubbleUp(this.size++);
   }
 
   pop(): T | undefined {
-    if (this.heap.length === 0) return undefined;
+    if (this.size === 0) return undefined;
 
     const result = this.heap[0][1];
-    const last = this.heap.pop()!;
+    this.size--;
 
-    if (this.heap.length > 0) {
+    if (this.size > 0) {
+      const last = this.heap[this.size];
       this.heap[0] = last;
       this.bubbleDown(0);
     }
@@ -298,50 +301,60 @@ class PriorityQueue<T> {
     return result;
   }
 
-  isEmpty(): boolean {
-    return this.heap.length === 0;
+  private grow(): void {
+    const newCapacity = this.heap.length * 2;
+    const newHeap = new Array(newCapacity);
+    for (let i = 0; i < this.size; i++) {
+      newHeap[i] = this.heap[i];
+    }
+    this.heap = newHeap;
   }
 
-  private bubbleUp(index: number) {
-    while (index > 0) {
-      const parentIndex = (index - 1) >>> 1;
-      if (this.heap[parentIndex][0] <= this.heap[index][0]) break;
+  // Optimized bubbleUp using shift operations
+  private bubbleUp(index: number): void {
+    const item = this.heap[index];
 
-      [this.heap[parentIndex], this.heap[index]] = [
-        this.heap[index],
-        this.heap[parentIndex],
-      ];
+    while (index > 0) {
+      const parentIndex = (index - 1) >> 1;
+      const parent = this.heap[parentIndex];
+
+      if (parent[0] <= item[0]) break;
+
+      this.heap[index] = parent;
       index = parentIndex;
     }
+
+    this.heap[index] = item;
   }
 
-  private bubbleDown(index: number) {
-    while (true) {
-      let smallest = index;
-      const leftChild = (index << 1) + 1;
-      const rightChild = leftChild + 1;
+  // Optimized bubbleDown using shift operations
+  private bubbleDown(index: number): void {
+    const item = this.heap[index];
+    const halfSize = this.size >> 1;
 
-      if (
-        leftChild < this.heap.length &&
-        this.heap[leftChild][0] < this.heap[smallest][0]
-      ) {
-        smallest = leftChild;
+    while (index < halfSize) {
+      let bestIndex = (index << 1) + 1;
+      let bestPriority = this.heap[bestIndex][0];
+
+      const rightIndex = bestIndex + 1;
+      if (rightIndex < this.size) {
+        const rightPriority = this.heap[rightIndex][0];
+        if (rightPriority < bestPriority) {
+          bestIndex = rightIndex;
+          bestPriority = rightPriority;
+        }
       }
 
-      if (
-        rightChild < this.heap.length &&
-        this.heap[rightChild][0] < this.heap[smallest][0]
-      ) {
-        smallest = rightChild;
-      }
+      if (bestPriority >= item[0]) break;
 
-      if (smallest === index) break;
-
-      [this.heap[index], this.heap[smallest]] = [
-        this.heap[smallest],
-        this.heap[index],
-      ];
-      index = smallest;
+      this.heap[index] = this.heap[bestIndex];
+      index = bestIndex;
     }
+
+    this.heap[index] = item;
+  }
+
+  isEmpty(): boolean {
+    return this.size === 0;
   }
 }

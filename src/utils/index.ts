@@ -30,7 +30,6 @@ import {
 import {
   chunks,
   combinations,
-  count,
   countOccurrences,
   create2DArray,
   findAllMatches,
@@ -109,7 +108,6 @@ export const array = {
   zip,
   pairs,
   transpose,
-  count,
   sequence,
   minMax,
 };
@@ -146,7 +144,6 @@ export {
   binaryToDecimal,
   chunks,
   combinations,
-  count,
   countOccurrences,
   create2DArray,
   deepClone,
