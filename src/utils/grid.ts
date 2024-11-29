@@ -138,3 +138,52 @@ export function manhattanDistance(
 ): number {
   return Math.abs(x1 - x2) + Math.abs(y1 - y2);
 }
+
+/**
+ * Rotate a grid 90 degrees clockwise
+ *
+ * When to use:
+ * - Pattern matching with rotations
+ * - Grid transformation puzzles
+ * - Need to check all orientations
+ * - Mirror/symmetry problems
+ *
+ * When not to use:
+ * - Large grids (memory intensive)
+ * - Non-square grids
+ * - Simple grid traversal
+ *
+ * @example
+ * // Rotate a simple grid
+ * const grid = [
+ *   [1, 2],
+ *   [3, 4]
+ * ];
+ * rotateGrid(grid)
+ * // Returns: [
+ * //   [3, 1],
+ * //   [4, 2]
+ * // ]
+ *
+ * // Check all rotations for pattern
+ * let currentGrid = grid;
+ * for (let i = 0; i < 4; i++) {
+ *   if (checkPattern(currentGrid)) break;
+ *   currentGrid = rotateGrid(currentGrid);
+ * }
+ *
+ * // Find symmetrical patterns
+ * const isSymmetrical = grid.toString() === rotateGrid(grid).toString();
+ */
+export function rotateGrid<T>(grid: T[][]): T[][] {
+  const N = grid.length;
+  const rotated = Array(N).fill(0).map(() => Array(N).fill(0));
+
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
+      rotated[j][N - 1 - i] = grid[i][j];
+    }
+  }
+
+  return rotated;
+}

@@ -150,3 +150,73 @@ export function getPermutations<T>(array: T[]): T[][] {
   }
   return result;
 }
+
+/**
+ * Convert binary string to decimal number
+ *
+ * When to use:
+ * - Binary string conversion problems
+ * - Bit manipulation puzzles
+ * - Binary pattern matching
+ *
+ * When not to use:
+ * - Already have number type
+ * - Non-binary strings
+ * - Numbers exceeding safe integer
+ *
+ * @example
+ * binaryToDecimal('1101') // Returns 13
+ * binaryToDecimal('00001111') // Returns 15
+ *
+ * // Use in pattern matching
+ * const patterns = ['1010', '1100', '1111'];
+ * const values = patterns.map(binaryToDecimal);
+ */
+export function binaryToDecimal(binary: string): number {
+  let result = 0;
+  for (let i = 0; i < binary.length; i++) {
+    result = (result << 1) | (binary[i] === "1" ? 1 : 0);
+  }
+  return result;
+  // Faster than parseInt(binary, 2) for longer strings
+}
+
+/**
+ * Optimized mode (most frequent value) calculator
+ *
+ * When to use:
+ * - Need most common element
+ * - Frequency analysis
+ * - Single pass required
+ * - Memory available for Map
+ *
+ * When not to use:
+ * - Need all frequencies
+ * - Need to handle ties
+ * - Memory constrained
+ * - Need to track frequency order
+ *
+ * @example
+ * mode([1, 2, 2, 3, 4, 2]) // Returns 2
+ *
+ * // Find most common character
+ * mode('abracadabra'.split('')) // Returns 'a'
+ */
+export function mode<T>(arr: T[]): T {
+  const freq = new Map<T, number>();
+  let maxFreq = 0;
+  let maxItem: T = arr[0];
+
+  // Single pass through array
+  for (const item of arr) {
+    const count = (freq.get(item) || 0) + 1;
+    freq.set(item, count);
+
+    if (count > maxFreq) {
+      maxFreq = count;
+      maxItem = item;
+    }
+  }
+
+  return maxItem;
+}

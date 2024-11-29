@@ -8,7 +8,14 @@ import {
   parseNumberGrid,
 } from "./input.ts";
 
-import { gcd, getPermutations, lcm, lcmArray } from "./math.ts";
+import {
+  binaryToDecimal,
+  gcd,
+  getPermutations,
+  lcm,
+  lcmArray,
+  mode,
+} from "./math.ts";
 
 import {
   getAdjacent,
@@ -16,16 +23,32 @@ import {
   isInBounds,
   manhattanDistance,
   pointToString,
+  rotateGrid,
   stringToPoint,
 } from "./grid.ts";
 
 import {
+  chunks,
+  combinations,
+  count,
   countOccurrences,
+  create2DArray,
+  findAllMatches,
   findNumbers,
   getFrequencyMap,
+  hasIntersection,
+  minMax,
+  pairs,
   product,
+  sequence,
   sum,
+  transpose,
+  unique,
+  windows,
+  zip,
 } from "./array.ts";
+
+import { binarySearchAnswer, deepClone, getAllSubstrings } from "./utils.ts";
 
 import { aStar, bfs, dijkstra } from "./pathfinding.ts";
 
@@ -56,6 +79,8 @@ export const math = {
   getPermutations,
   isPrime,
   getPrimeFactors,
+  binaryToDecimal,
+  mode,
 };
 
 export const grid = {
@@ -65,6 +90,7 @@ export const grid = {
   pointToString,
   stringToPoint,
   manhattanDistance,
+  rotateGrid,
 };
 
 export const array = {
@@ -73,6 +99,19 @@ export const array = {
   product,
   findNumbers,
   getFrequencyMap,
+  combinations,
+  windows,
+  findAllMatches,
+  create2DArray,
+  hasIntersection,
+  chunks,
+  unique,
+  zip,
+  pairs,
+  transpose,
+  count,
+  sequence,
+  minMax,
 };
 
 export const pathfinding = {
@@ -93,21 +132,37 @@ export const ranges = {
   merge: mergeRanges,
 };
 
+export const utils = {
+  deepClone,
+  getAllSubstrings,
+  binarySearchAnswer,
+};
+
 // Also export everything directly for those who prefer destructuring
 export {
   aStar,
   bfs,
+  binarySearchAnswer,
+  binaryToDecimal,
+  chunks,
+  combinations,
+  count,
   countOccurrences,
+  create2DArray,
+  deepClone,
   dijkstra,
+  findAllMatches,
   findNumbers,
   gcd,
   getAdjacent,
   getAdjacentWithDiagonals,
+  getAllSubstrings,
   getFrequencyMap,
   getInputGroups,
   getInputLines,
   getPermutations,
   getPrimeFactors,
+  hasIntersection,
   isInBounds,
   isPrime,
   lcm,
@@ -116,17 +171,25 @@ export {
   manhattanDistance,
   memoize,
   mergeRanges,
+  minMax,
+  mode,
+  pairs,
   parseGrid,
   parseNumberGrid,
   pointToString,
   product,
   range,
   rangesOverlap,
+  sequence,
   setDifference,
   setIntersection,
   setUnion,
   stringToPoint,
   sum,
+  transpose,
+  unique,
+  windows,
+  zip,
 };
 
 // Export commonly used types
