@@ -469,3 +469,196 @@ export function minMax(arr: number[]): { min: number; max: number } {
     max: Math.max(...arr),
   };
 }
+
+/**
+ * Basic number array sort using JavaScript's built-in sort
+ *
+ * When to use:
+ * - Small to medium arrays (< 1000 elements)
+ * - Need stable sort
+ * - Original array should remain unchanged
+ * - Simple sorting requirements
+ *
+ * When not to use:
+ * - Very large arrays (use quickSort)
+ * - Need in-place sorting (memory constrained)
+ * - Integers in small range (use countingSort)
+ * - Performance is critical
+ *
+ * @example
+ * sortNumbers([3, 1, 4, 1, 5]) // Returns [1, 1, 3, 4, 5]
+ *
+ * // Original array unchanged
+ * const nums = [5, 2, 8];
+ * const sorted = sortNumbers(nums);
+ * console.log(nums); // Still [5, 2, 8]
+ */
+export function sortNumbers(arr: number[]): number[] {
+  return arr.slice().sort((a, b) => a - b);
+}
+
+/**
+ * Quick sort implementation with in-place sorting
+ *
+ * When to use:
+ * - Large arrays (> 1000 elements)
+ * - Memory efficiency is important
+ * - Speed is critical
+ * - Can modify original array
+ *
+ * When not to use:
+ * - Need stable sort
+ * - Original array must be preserved
+ * - Array is nearly sorted (worst case)
+ * - Small arrays (overhead not worth it)
+ *
+ * How it works:
+ * 1. Choose pivot element
+ * 2. Partition array around pivot
+ * 3. Recursively sort sub-arrays
+ *
+ * Time complexity: O(n log n) average, O(n²) worst
+ * Space complexity: O(log n)
+ *
+ * @example
+ * const arr = [3, 1, 4, 1, 5];
+ * quickSort(arr);
+ * console.log(arr); // [1, 1, 3, 4, 5]
+ */
+export function quickSort(arr: number[]): void {
+  function partition(low: number, high: number): number {
+    const pivot = arr[high];
+    let i = low - 1;
+
+    for (let j = low; j < high; j++) {
+      if (arr[j] <= pivot) {
+        i++;
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+    return i + 1;
+  }
+
+  function sort(low: number, high: number): void {
+    if (low < high) {
+      const pi = partition(low, high);
+      sort(low, pi - 1);
+      sort(pi + 1, high);
+    }
+  }
+
+  sort(0, arr.length - 1);
+}
+
+/**
+ * Counting sort for integers in a known range
+ *
+ * When to use:
+ * - Integers in a small, known range
+ * - Range size (max-min) is comparable to array length
+ * - Need linear time sorting
+ * - Memory usage not a concern
+ *
+ * When not to use:
+ * - Floating point numbers
+ * - Large range of values
+ * - Memory constrained
+ * - Sparse data
+ *
+ * How it works:
+ * 1. Count occurrences of each number
+ * 2. Reconstruct sorted array from counts
+ *
+ * Time complexity: O(n + k) where k is range
+ * Space complexity: O(k)
+ *
+ * @example
+ * countingSort([3, 1, 4, 1, 5], 1, 5) // [1, 1, 3, 4, 5]
+ *
+ * // Perfect for small ranges
+ * const scores = [10, 8, 9, 10, 7, 8];
+ * countingSort(scores, 7, 10) // [7, 8, 8, 9, 10, 10]
+ */
+export function countingSort(
+  arr: number[],
+  min: number,
+  max: number,
+): number[] {
+  const range = max - min + 1;
+  const count = new Array(range).fill(0);
+  const output = new Array(arr.length);
+
+  // Count occurrences
+  for (const num of arr) {
+    count[num - min]++;
+  }
+
+  // Reconstruct sorted array
+  let outIdx = 0;
+  for (let i = 0; i < range; i++) {
+    while (count[i]-- > 0) {
+      output[outIdx++] = i + min;
+    }
+  }
+
+  return output;
+}
+
+/**
+ * Sort and remove duplicates in one pass
+ *
+ * When to use:
+ * - Need both sorting and deduplication
+ * - Order matters
+ * - Memory usage not a concern
+ * - Want cleaner code than separate sort/unique
+ *
+ * When not to use:
+ * - Need to preserve duplicates
+ * - Need to count occurrences
+ * - Memory constrained
+ * - Need to track original indices
+ *
+ * Time complexity: O(n log n)
+ * Space complexity: O(n)
+ *
+ * @example
+ * sortUnique([3, 1, 4, 1, 5]) // [1, 3, 4, 5]
+ *
+ * // Great for category lists
+ * const categories = [5, 2, 5, 3, 2, 1];
+ * sortUnique(categories) // [1, 2, 3, 5]
+ */
+export function sortUnique(arr: number[]): number[] {
+  return [...new Set(arr)].sort((a, b) => a - b);
+}
+
+/**
+ * Get top N largest elements
+ *
+ * When to use:
+ * - Only need a subset of largest elements
+ * - Full sort not required
+ * - Top rankings/scores needed
+ * - Performance matters for large arrays
+ *
+ * When not to use:
+ * - Need complete sorted array
+ * - N is close to array length
+ * - Need to maintain original order
+ * - Need both ends of range
+ *
+ * Time complexity: O(n log n)
+ * Space complexity: O(n)
+ *
+ * @example
+ * getTopN([3, 1, 4, 1, 5], 3) // [5, 4, 3]
+ *
+ * // Perfect for rankings
+ * const scores = [88, 92, 75, 96, 84];
+ * getTopN(scores, 3) // [96, 92, 88] (top 3 scores)
+ */
+export function getTopN(arr: number[], n: number): number[] {
+  return arr.slice().sort((a, b) => b - a).slice(0, n);
+}
