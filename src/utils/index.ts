@@ -36,12 +36,15 @@ import {
   findAllMatches,
   findNumbers,
   getFrequencyMap,
+  getOverlappingPairs,
   getTopN,
   hasIntersection,
   minMax,
   pairs,
   product,
   quickSort,
+  removeAtIndex,
+  removeAtIndexInPlace,
   sequence,
   sortNumbers,
   sortUnique,
@@ -66,7 +69,14 @@ import { memoize } from "./memoize.ts";
 
 import { Log } from "./logger.ts";
 
+import { getDifference, getSignedDifference } from "./nums.ts";
+
 export const log = { Log };
+
+export const nums = {
+  getDifference,
+  getSignedDifference,
+};
 
 // Export everything grouped by category
 export const input = {
@@ -114,6 +124,9 @@ export const array = {
   minMax,
   pairs,
   sequence,
+  getOverlappingPairs,
+  removeAtIndex,
+  removeAtIndexInPlace,
 };
 
 export const pathfinding = {
@@ -157,11 +170,14 @@ export {
   getAdjacent,
   getAdjacentWithDiagonals,
   getAllSubstrings,
+  getDifference,
   getFrequencyMap,
   getInputGroups,
   getInputLines,
+  getOverlappingPairs,
   getPermutations,
   getPrimeFactors,
+  getSignedDifference,
   getTopN,
   hasIntersection,
   isInBounds,
@@ -182,6 +198,8 @@ export {
   quickSort,
   range,
   rangesOverlap,
+  removeAtIndex,
+  removeAtIndexInPlace,
   sequence,
   setDifference,
   setIntersection,

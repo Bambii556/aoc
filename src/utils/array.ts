@@ -389,6 +389,29 @@ export function pairs<T>(arr: T[]): [T, T][] {
 }
 
 /**
+ * Create overlapping pairs from array elements
+ *
+ * When to use:
+ * - Need consecutive pairs
+ * - Analyzing sequential relationships
+ * - Pattern matching between adjacent items
+ * - Sliding window of size 2
+ *
+ * When not to use:
+ * - Need non-sequential pairs
+ * - Array too small (length < 2)
+ * - Need larger groups
+ *
+ * @example
+ * getPairs([1,2,3,4]) // [[1,2],[2,3],[3,4]]
+ * getPairs(['a','b','c']) // [['a','b'],['b','c']]
+ */
+export function getOverlappingPairs<T>(arr: T[]): [T, T][] {
+  if (arr.length < 2) return [];
+  return arr.slice(0, -1).map((item, i) => [item, arr[i + 1]]);
+}
+
+/**
  * Transpose a matrix (2D array) - converts rows to columns and columns to rows
  *
  * When to use:
@@ -661,4 +684,72 @@ export function sortUnique(arr: number[]): number[] {
  */
 export function getTopN(arr: number[], n: number): number[] {
   return arr.slice().sort((a, b) => b - a).slice(0, n);
+}
+
+/**
+ * Remove item at specified index from array
+ *
+ * When to use:
+ * - Need to remove single item by index
+ * - Want immutable operation (original array unchanged)
+ * - Need simple array modification
+ * - Position of item is known
+ *
+ * When not to use:
+ * - Need to remove multiple items
+ * - Want to modify array in place
+ * - Need to remove by value instead of index
+ * - Array is very large (consider splice)
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(n)
+ *
+ * @param arr - Input array
+ * @param index - Index to remove
+ * @returns New array with item removed
+ *
+ * @example
+ * removeAtIndex([1, 2, 3, 4], 1) // [1, 3, 4]
+ *
+ * // Keep original array unchanged
+ * const original = [1, 2, 3];
+ * const modified = removeAtIndex(original, 0);
+ * console.log(original); // [1, 2, 3]
+ * console.log(modified); // [2, 3]
+ */
+export function removeAtIndex<T>(arr: T[], index: number): T[] {
+  // Input validation
+  if (index < 0 || index >= arr.length) {
+    return arr.slice();
+  }
+
+  // Return new array with item removed
+  return [...arr.slice(0, index), ...arr.slice(index + 1)];
+}
+
+/**
+ * Faster version that modifies array in place
+ *
+ * When to use:
+ * - Performance is critical
+ * - Original array can be modified
+ * - Memory usage is a concern
+ *
+ * When not to use:
+ * - Need immutable operation
+ * - Original array must be preserved
+ *
+ * @example
+ * const arr = [1, 2, 3, 4];
+ * removeAtIndexInPlace(arr, 1);
+ * console.log(arr); // [1, 3, 4]
+ */
+export function removeAtIndexInPlace<T>(arr: T[], index: number): void {
+  // Input validation
+  if (index < 0 || index >= arr.length) {
+    return;
+  }
+
+  // Modify array in place
+  arr.splice(index, 1);
 }
