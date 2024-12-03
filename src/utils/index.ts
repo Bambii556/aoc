@@ -4,8 +4,13 @@
 import {
   getInputGroups,
   getInputLines,
+  parseBinaryGrid,
+  parseCoordinates,
   parseGrid,
+  parseInstructions,
+  parseKeyValue,
   parseNumberGrid,
+  parseRanges,
 } from "./input.ts";
 
 import {
@@ -69,95 +74,28 @@ import { memoize } from "./memoize.ts";
 
 import { Log } from "./logger.ts";
 
-import { getDifference, getSignedDifference } from "./nums.ts";
-
-export const log = { Log };
-
-export const nums = {
+import {
+  average,
+  clamp,
   getDifference,
+  getPercentageDifference,
   getSignedDifference,
-};
-
-// Export everything grouped by category
-export const input = {
-  getInputLines,
-  getInputGroups,
-  parseGrid,
-  parseNumberGrid,
-};
-
-export const math = {
-  gcd,
-  lcm,
-  lcmArray,
-  getPermutations,
-  isPrime,
-  getPrimeFactors,
-  binaryToDecimal,
-  mode,
-};
-
-export const grid = {
-  getAdjacent,
-  getAdjacentWithDiagonals,
-  isInBounds,
-  pointToString,
-  stringToPoint,
-  manhattanDistance,
-  rotateGrid,
-};
-
-export const array = {
-  countOccurrences,
-  sum,
-  product,
-  findNumbers,
-  getFrequencyMap,
-  countingSort,
-  getTopN,
-  quickSort,
-  sortNumbers,
-  sortUnique,
-  chunks,
-  combinations,
-  hasIntersection,
-  minMax,
-  pairs,
-  sequence,
-  getOverlappingPairs,
-  removeAtIndex,
-  removeAtIndexInPlace,
-};
-
-export const pathfinding = {
-  dijkstra,
-  bfs,
-  aStar,
-};
-
-export const sets = {
-  intersection: setIntersection,
-  union: setUnion,
-  difference: setDifference,
-};
-
-export const ranges = {
-  create: range,
-  overlap: rangesOverlap,
-  merge: mergeRanges,
-};
-
-export const utils = {
-  deepClone,
-  getAllSubstrings,
-  binarySearchAnswer,
-};
+  isBetween,
+  isInRange,
+  median,
+  roundToNearest,
+  scale,
+} from "./numbers.ts";
 
 // Also export everything directly for those who prefer destructuring
 export {
   aStar,
+  average,
   bfs,
+  binarySearchAnswer,
+  binaryToDecimal,
   chunks,
+  clamp,
   combinations,
   countingSort,
   countOccurrences,
@@ -175,24 +113,33 @@ export {
   getInputGroups,
   getInputLines,
   getOverlappingPairs,
+  getPercentageDifference,
   getPermutations,
   getPrimeFactors,
   getSignedDifference,
   getTopN,
   hasIntersection,
+  isBetween,
   isInBounds,
+  isInRange,
   isPrime,
   lcm,
   lcmArray,
   Log,
   manhattanDistance,
+  median,
   memoize,
   mergeRanges,
   minMax,
   mode,
   pairs,
+  parseBinaryGrid,
+  parseCoordinates,
   parseGrid,
+  parseInstructions,
+  parseKeyValue,
   parseNumberGrid,
+  parseRanges,
   pointToString,
   product,
   quickSort,
@@ -200,6 +147,9 @@ export {
   rangesOverlap,
   removeAtIndex,
   removeAtIndexInPlace,
+  rotateGrid,
+  roundToNearest,
+  scale,
   sequence,
   setDifference,
   setIntersection,

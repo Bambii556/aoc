@@ -1,11 +1,4 @@
-import {
-  countOccurrences,
-  getDifference,
-  getInputLines,
-  getOverlappingPairs,
-  Log,
-  removeAtIndex,
-} from "../../utils/index.ts";
+import { getInputLines } from "../../utils/index.ts";
 import { Solution } from "../../types.ts";
 
 export const day2: Solution = {

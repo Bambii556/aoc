@@ -84,3 +84,75 @@ export function parseNumberGrid(input: string): Uint8Array[] {
     return nums;
   });
 }
+
+/**
+ * Parse key-value pairs
+ *
+ * @example
+ * // a=1 b=2
+ * parseKeyValue(input) // { a: '1', b: '2' }
+ */
+export function parseKeyValue(input: string): Record<string, string> {
+  return Object.fromEntries(
+    input.split(" ")
+      .map((pair) => pair.split("=")),
+  );
+}
+
+/**
+ * Parse coordinates in format "x,y"
+ *
+ * @example
+ * // 1,2
+ * // 3,4
+ * parseCoordinates(input) // [[1,2], [3,4]]
+ */
+export function parseCoordinates(input: string): [number, number][] {
+  return input.split("\n")
+    .map((line) => line.split(",").map(Number) as [number, number]);
+}
+
+/**
+ * Parse instructions with direction and amount
+ *
+ * @example
+ * // forward 5
+ * // down 3
+ * parseInstructions(input) // [['forward', 5], ['down', 3]]
+ */
+export function parseInstructions(input: string): [string, number][] {
+  return input.split("\n")
+    .map((line) => {
+      const [dir, amt] = line.split(" ");
+      return [dir, Number(amt)];
+    });
+}
+
+/**
+ * Parse input to binary matrix
+ *
+ * @example
+ * // #.#
+ * // .#.
+ * parseBinaryGrid(input, '#', '.') // [[1,0,1], [0,1,0]]
+ */
+export function parseBinaryGrid(
+  input: string,
+  one = "#",
+  zero = ".",
+): number[][] {
+  return input.split("\n")
+    .map((line) => [...line].map((c) => c === one ? 1 : 0));
+}
+
+/**
+ * Parse range notation "a-b"
+ *
+ * @example
+ * // 2-4,6-8
+ * parseRanges(input) // [[2,4], [6,8]]
+ */
+export function parseRanges(input: string): [number, number][] {
+  return input.split(",")
+    .map((range) => range.split("-").map(Number) as [number, number]);
+}
