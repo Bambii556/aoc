@@ -12,7 +12,7 @@
         "--allow-read"
       ],
       "program": "${workspaceFolder}/src/main.ts",
-      "args": ["1"],
+      "args": ["3"],
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229
     },
