@@ -1,7 +1,6 @@
 import {
   countOccurrences,
   getInputLines,
-  Log,
   sortNumbers,
   sum,
 } from "../../utils/index.ts";

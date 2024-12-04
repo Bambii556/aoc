@@ -11,4 +11,12 @@ export class Log {
   static divider(char: string = "─", length = 50) {
     console.log("\n" + char.repeat(length) + "\n");
   }
+
+  static info(message: string, ...args: unknown[]) {
+    console.log(`${message}`, ...args);
+  }
+
+  static error(message: string, ...args: unknown[]) {
+    console.error(`${message}`, ...args);
+  }
 }
