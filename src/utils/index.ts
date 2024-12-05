@@ -23,6 +23,7 @@ import {
 } from "./math.ts";
 
 import {
+  findAllWords,
   getAdjacent,
   getAdjacentWithDiagonals,
   isInBounds,
@@ -103,6 +104,7 @@ export {
   deepClone,
   dijkstra,
   findAllMatches,
+  findAllWords,
   findNumbers,
   gcd,
   getAdjacent,

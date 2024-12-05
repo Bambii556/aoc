@@ -1,13 +1,20 @@
 import { assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
 import { day4 as solution } from "./index.ts";
 
-const sampleInput = `your
-sample
-input`;
+const sampleInput = `MMMSXXMASM
+MSAMXMSMSA
+AMXSXMAAMM
+MSAMASMSMX
+XMASAMXAMM
+XXAMMXXAMA
+SMSMSASXSS
+SAXAMASAAA
+MAMMMXMMMM
+MXMXAXMASX`;
 
 const expected = {
-  part1: "expected result 1",
-  part2: "expected result 2",
+  part1: 18,
+  part2: 9,
 };
 
 Deno.test("Day 4", async (t) => {
