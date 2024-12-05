@@ -1,5 +1,12 @@
 export class Log {
-  static async logWithTimer(timerName: string, fn: () => Promise<unknown>) {
+  static async logWithTimer<T>(
+    timerName: string,
+    fn: () => Promise<T> | T,
+    reset?: boolean,
+  ) {
+    if (reset) {
+      console.countReset(timerName);
+    }
     console.time(timerName);
     const result = await fn();
     console.timeEnd(timerName);
