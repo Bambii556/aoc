@@ -23,6 +23,7 @@ import {
 } from "./math.ts";
 
 import {
+  countInGrid,
   findAllWords,
   getAdjacent,
   getAdjacentWithDiagonals,
@@ -98,6 +99,7 @@ export {
   chunks,
   clamp,
   combinations,
+  countInGrid,
   countingSort,
   countOccurrences,
   create2DArray,

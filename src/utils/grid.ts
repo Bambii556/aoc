@@ -50,13 +50,12 @@ export function getAdjacentWithDiagonals(
  * isInBounds(0, 0, grid) // true
  * isInBounds(2, 2, grid) // false
  */
-export function isInBounds(
-  x: number,
-  y: number,
-  width: number,
-  height: number,
+export function isInBounds<T>(
+  row: number,
+  col: number,
+  grid: T[][],
 ): boolean {
-  return x >= 0 && x < width && y >= 0 && y < height;
+  return col >= 0 && col < grid[0].length && row >= 0 && row < grid.length;
 }
 
 /**
@@ -284,4 +283,28 @@ function checkDirection(
   }
 
   return coords;
+}
+
+/**
+ * Count occurrences of a value in a 2D array
+ *
+ * When to use:
+ * - Need to count specific elements in grid
+ * - Finding frequency of items in 2D array
+ * - Grid pattern analysis
+ *
+ * @example
+ * const grid = [['A','B','A'], ['A','C','B']]
+ * countInGrid(grid, 'A') // Returns 3
+ *
+ * const numGrid = [[1,2,1], [1,3,2]]
+ * countInGrid(numGrid, 1) // Returns 3
+ */
+export function countInGrid<T>(grid: T[][], value: T): number {
+  return grid.reduce(
+    (count, row) =>
+      count +
+      row.reduce((rowCount, cell) => rowCount + (cell === value ? 1 : 0), 0),
+    0,
+  );
 }
