@@ -22,18 +22,4 @@ Deno.test("Day 9", async (t) => {
       assertEquals(result, expected.part2);
     });
   });
-
-  await t.step("puzzle input", async (t) => {
-    const input = await Deno.readTextFile("src/days/day1/input.txt");
-
-    await t.step("part 1", async () => {
-      const result = await solution.part1(input);
-      assertEquals(result, "puzzle answer 1"); // Update after solving
-    });
-
-    await t.step("part 2", async () => {
-      const result = await solution.part2(input);
-      assertEquals(result, "puzzle answer 2"); // Update after solving
-    });
-  });
 });
