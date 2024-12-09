@@ -8,6 +8,7 @@ import { day6 } from "./day6/index.ts";
 import { day7 } from "./day7/index.ts";
 import { day8 } from "./day8/index.ts";
 import { day9 } from "./day9/index.ts";
+import { day10 } from "./day10/index.ts";
 
 export const days: Record<number, Solution> = {
   1: day1,
@@ -19,4 +20,5 @@ export const days: Record<number, Solution> = {
   7: day7,
   8: day8,
   9: day9,
+  10: day10,
 };
