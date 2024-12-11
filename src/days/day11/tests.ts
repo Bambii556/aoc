@@ -1,12 +1,10 @@
 import { assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
 import { day11 as solution } from "./index.ts";
 
-const sampleInput = `your
-sample
-input`;
+const sampleInput = `125 17`;
 
 const expected = {
-  part1: "expected result 1",
+  part1: 55312,
   part2: "expected result 2",
 };
 

@@ -232,3 +232,7 @@ export function scale(
 ): number {
   return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
+
+export function isEven(num: number): boolean {
+  return num % 2 === 0;
+}
