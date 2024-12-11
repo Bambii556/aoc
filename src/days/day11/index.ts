@@ -2,10 +2,11 @@ import { getInputLines, isEven, Log } from "../../utils/index.ts";
 import { Solution } from "../../types.ts";
 import { Worker } from "node:worker_threads";
 
-type ChunkResult = {
-  chunk: string[];
+interface ChunkResult {
+  chunk: BigUint64Array;
   length: number;
-};
+  buffer: ArrayBuffer;
+}
 
 export const day11: Solution = {
   part1: async (input: string) => {
@@ -29,7 +30,12 @@ export const day11: Solution = {
     );
 
     try {
-      let chunks: string[][] = [input.split(" ")];
+      // Convert initial input to BigUint64Array
+      let chunks: BigUint64Array[] = [
+        new BigUint64Array(
+          input.split(" ").map((s) => BigInt(s)),
+        ),
+      ];
       let chunkLengths: number[] = [chunks[0].length];
 
       for (let blink = 1; blink <= 75; blink++) {
@@ -37,7 +43,7 @@ export const day11: Solution = {
         console.time(blinkName);
         // Process chunks in parallel
         const chunkPromises = chunks.map((chunk, idx) =>
-          new Promise<{ chunk: string[]; length: number }>((resolve) => {
+          new Promise<ChunkResult>((resolve) => {
             const worker = workers[idx % NUM_WORKERS];
             worker.once("message", resolve);
             worker.postMessage({ chunk, length: chunkLengths[idx] });
@@ -48,17 +54,19 @@ export const day11: Solution = {
         const results = await Promise.all(chunkPromises);
 
         // Combine and redistribute results
-        const newChunks: string[][] = [];
+        const newChunks: BigUint64Array[] = [];
         const newLengths: number[] = [];
-        let currentChunk: string[] = new Array(CHUNK_SIZE);
+        let currentChunk = new BigUint64Array(CHUNK_SIZE);
         let currentLength = 0;
 
-        for (const { chunk, length } of results) {
+        // Type-safe iteration
+        for (const result of results) {
+          const { chunk, length } = result;
           for (let i = 0; i < length; i++) {
             if (currentLength >= CHUNK_SIZE) {
-              newChunks.push(currentChunk);
+              newChunks.push(currentChunk.slice(0, currentLength));
               newLengths.push(currentLength);
-              currentChunk = [];
+              currentChunk = new BigUint64Array(CHUNK_SIZE);
               currentLength = 0;
             }
             currentChunk[currentLength++] = chunk[i];

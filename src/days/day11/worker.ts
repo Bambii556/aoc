@@ -3,31 +3,39 @@ import { parentPort } from "node:worker_threads";
 
 if (!parentPort) throw new Error("Must be run as a worker");
 
-function processChunkInWorker(chunk: string[], length: number) {
-  const resultChunk = new Array(length * 2); // Max possible size
+function processChunkInWorker(chunk: BigUint64Array, length: number) {
+  const resultChunk = new BigUint64Array(length * 2);
   let resultLength = 0;
 
   for (let i = 0; i < length; i++) {
-    const stone = chunk[i];
+    const value = chunk[i];
 
-    if (stone === "0") {
-      resultChunk[resultLength++] = "1";
-    } else if (stone.length % 2 === 0) {
-      const mid = stone.length >> 1;
-      const left = stone.slice(0, mid);
-      const right = stone.slice(mid);
-
-      resultChunk[resultLength++] = left.replace(/^0+/, "") || "0";
-      resultChunk[resultLength++] = right.replace(/^0+/, "") || "0";
+    if (value === 0n) {
+      resultChunk[resultLength++] = 1n;
     } else {
-      resultChunk[resultLength++] = (parseInt(stone, 10) * 2024).toString();
+      const strValue = value.toString();
+
+      if (strValue.length % 2 === 0) {
+        const mid = strValue.length >> 1;
+        const left = strValue.slice(0, mid);
+        const right = strValue.slice(mid);
+
+        resultChunk[resultLength++] = BigInt(left);
+        resultChunk[resultLength++] = BigInt(right);
+      } else {
+        resultChunk[resultLength++] = value * 2024n;
+      }
     }
   }
 
-  return { chunk: resultChunk.slice(0, resultLength), length: resultLength };
+  return {
+    chunk: resultChunk.slice(0, resultLength),
+    length: resultLength,
+    buffer: resultChunk.buffer,
+  };
 }
 
 parentPort.on("message", ({ chunk, length }) => {
   const result = processChunkInWorker(chunk, length);
-  parentPort?.postMessage(result);
+  parentPort?.postMessage(result, [result.buffer]);
 });
