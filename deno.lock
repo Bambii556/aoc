@@ -51,6 +51,11 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@1"
-    ]
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@types/node@^22.10.2"
+      ]
+    }
   }
 }

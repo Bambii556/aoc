@@ -1,121 +1,40 @@
-import { getInputLines, isEven, Log } from "../../utils/index.ts";
+import { memoize } from "../../utils/index.ts";
 import { Solution } from "../../types.ts";
-import { Worker } from "node:worker_threads";
-
-interface ChunkResult {
-  chunk: BigUint64Array;
-  length: number;
-  buffer: ArrayBuffer;
-}
 
 export const day11: Solution = {
   part1: async (input: string) => {
-    let stones = input.split(" ");
-
-    for (let blink = 1; blink <= 25; blink++) {
-      stones = stones.flatMap((stone) => evaluateStone(stone));
-    }
-
-    return stones.length;
+    const numbers = input.split(" ").map(Number);
+    const solve = createSolver(); // Create new solver with fresh cache
+    return numbers.reduce((sum, num) => sum + solve(num, 25), 0);
   },
-
+  
   part2: async (input: string) => {
-    const CHUNK_SIZE = 200000;
-    const NUM_WORKERS = 12; // Adjust based on CPU cores
-
-    // Create worker pool
-    const workers = Array.from(
-      { length: NUM_WORKERS },
-      () => new Worker(new URL("./worker.ts", import.meta.url)),
-    );
-
-    try {
-      // Convert initial input to BigUint64Array
-      let chunks: BigUint64Array[] = [
-        new BigUint64Array(
-          input.split(" ").map((s) => BigInt(s)),
-        ),
-      ];
-      let chunkLengths: number[] = [chunks[0].length];
-
-      for (let blink = 1; blink <= 75; blink++) {
-        const blinkName = `Blink ${blink}`;
-        console.time(blinkName);
-        // Process chunks in parallel
-        const chunkPromises = chunks.map((chunk, idx) =>
-          new Promise<ChunkResult>((resolve) => {
-            const worker = workers[idx % NUM_WORKERS];
-            worker.once("message", resolve);
-            worker.postMessage({ chunk, length: chunkLengths[idx] });
-          })
-        );
-
-        // Wait for all chunks to process
-        const results = await Promise.all(chunkPromises);
-
-        // Combine and redistribute results
-        const newChunks: BigUint64Array[] = [];
-        const newLengths: number[] = [];
-        let currentChunk = new BigUint64Array(CHUNK_SIZE);
-        let currentLength = 0;
-
-        // Type-safe iteration
-        for (const result of results) {
-          const { chunk, length } = result;
-          for (let i = 0; i < length; i++) {
-            if (currentLength >= CHUNK_SIZE) {
-              newChunks.push(currentChunk.slice(0, currentLength));
-              newLengths.push(currentLength);
-              currentChunk = new BigUint64Array(CHUNK_SIZE);
-              currentLength = 0;
-            }
-            currentChunk[currentLength++] = chunk[i];
-          }
-        }
-
-        if (currentLength > 0) {
-          newChunks.push(currentChunk);
-          newLengths.push(currentLength);
-        }
-
-        chunks = newChunks;
-        chunkLengths = newLengths;
-
-        const totalLength = chunkLengths.reduce((sum, len) => sum + len, 0);
-        console.log(`Blink ${blink}: - ${totalLength} - ${chunks.length}`);
-        console.timeEnd(blinkName);
-      }
-
-      return chunkLengths.reduce((sum, len) => sum + len, 0);
-    } finally {
-      // Cleanup workers
-      workers.forEach((worker) => worker.terminate());
-    }
-  },
+    const numbers = input.split(" ").map(Number);
+    const solve = createSolver(); // Create new solver with fresh cache
+    return numbers.reduce((sum, num) => sum + solve(num, 75), 0);
+  }
 };
 
-function evaluateStone(stone: string): string[] {
-  // Rule 1: If stone is "0", return "1"
-  if (stone === "0") return ["1"];
-
-  // Rule 2: If even number of digits, split the string
-  const len = stone.length;
-  if (len % 2 === 0) {
-    const mid = len >> 1; // Bitwise shift instead of division
-
-    // Avoid regex when possible
-    let left = stone.slice(0, mid);
-    let right = stone.slice(mid);
-
-    // Manual leading zero removal (faster than regex)
-    while (left[0] === "0" && left.length > 1) left = left.slice(1);
-    while (right[0] === "0" && right.length > 1) right = right.slice(1);
-
-    return [left || "0", right || "0"];
-  }
-
-  // Rule 3: Multiply by 2024
-  // Only convert to number for multiplication
-  const num = parseInt(stone, 10);
-  return [(num * 2024).toString()];
-}
+const createSolver = () => {
+  const solve = memoize((x: number, steps: number): number => {
+    if (steps === 0) {
+      return 1;
+    }
+    
+    if (x === 0) {
+      return solve(1, steps - 1);
+    }
+    
+    const strNum = x.toString();
+    if (strNum.length % 2 === 0) {
+      const mid = strNum.length >> 1;
+      const left = parseInt(strNum.slice(0, mid), 10);
+      const right = parseInt(strNum.slice(mid), 10);
+      return solve(left, steps - 1) + solve(right, steps - 1);
+    }
+    
+    return solve(x * 2024, steps - 1);
+  });
+  
+  return solve;
+};
