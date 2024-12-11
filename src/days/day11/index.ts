@@ -20,7 +20,7 @@ export const day11: Solution = {
   },
 
   part2: async (input: string) => {
-    const CHUNK_SIZE = 100000;
+    const CHUNK_SIZE = 200000;
     const NUM_WORKERS = 12; // Adjust based on CPU cores
 
     // Create worker pool
