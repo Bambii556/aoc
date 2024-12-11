@@ -13,7 +13,7 @@
         "--allow-write"
       ],
       "program": "${workspaceFolder}/src/main.ts",
-      "args": ["11"],
+      "args": ["2024"],
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "console": "integratedTerminal"
@@ -29,28 +29,19 @@
         "--allow-read"
       ],
       "program": "${workspaceFolder}/src/main.ts",
-      "args": ["${input:dayNumber}"],
-      "cwd": "${workspaceFolder}",
-      "attachSimplePort": 9229,
-      "console": "integratedTerminal"
-    },
-    {
-      "name": "Deno: Test Current File",
-      "request": "launch",
-      "type": "node",
-      "runtimeExecutable": "deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "--allow-read"
-      ],
-      "program": "${file}",
+      "args": ["2024", "${input:dayNumber}"],
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "console": "integratedTerminal"
     }
   ],
   "inputs": [
+    {
+      "id": "yearNumber",
+      "type": "promptString",
+      "description": "Enter the Year (2020-2024)",
+      "default": "2024"
+    },
     {
       "id": "dayNumber",
       "type": "promptString",

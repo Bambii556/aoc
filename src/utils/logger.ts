@@ -1,29 +1,26 @@
-export class Log {
-  static async logWithTimer<T>(
-    timerName: string,
-    fn: () => Promise<T> | T,
-    reset?: boolean,
-  ) {
-    if (reset) {
-      console.countReset(timerName);
-    }
-    console.time(timerName);
-    const result = await fn();
-    console.timeEnd(timerName);
-
-    return result;
+export async function timer<T>(
+  timerName: string,
+  fn: () => Promise<T> | T,
+  reset?: boolean,
+) {
+  if (reset) {
+    console.countReset(timerName);
   }
+  console.time(timerName);
+  const result = await fn();
+  console.timeEnd(timerName);
 
-  /** Create a divider line */
-  static divider(char: string = "─", length = 50) {
-    console.log("\n" + char.repeat(length) + "\n");
-  }
+  return result;
+}
 
-  static info(message: string, ...args: unknown[]) {
-    console.log(`${message}`, ...args);
-  }
+export function divider(char: string = "─", length = 50) {
+  console.log("\n" + char.repeat(length) + "\n");
+}
 
-  static error(message: string, ...args: unknown[]) {
-    console.error(`${message}`, ...args);
-  }
+export function log(message: string, ...args: unknown[]) {
+  console.log(`${message}`, ...args);
+}
+
+export function error(message: string, ...args: unknown[]) {
+  console.error(`${message}`, ...args);
 }
