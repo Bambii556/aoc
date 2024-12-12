@@ -1,8 +1,6 @@
 import {
   findAllIndexesInGrid,
   getAdjacentWithDiagonals,
-  getAdjacentWithTopAndBottom,
-  getInputLines,
   isInBounds,
   parseGrid,
 } from "../../utils/index.ts";
@@ -44,16 +42,6 @@ export const day3: Solution = {
       if (numbers.length === 2) {
         gears.push(numbers[0] * numbers[1]);
       }
-
-      // const adj = getAdjacentWithTopAndBottom(gearX, gearY);
-      // for (const [x, y] of adj) {
-      //   if (isInBounds(x, y, grid) && isDigit(grid[x][y])) {
-      //     const numbers = getNumbersAroundPosition(x, y, grid);
-      //     if (numbers.length === 2) {
-      //       gears.push(numbers[0] * numbers[1]);
-      //     }
-      //   }
-      // }
     }
     return sum(gears);
   },
