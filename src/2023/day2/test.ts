@@ -18,7 +18,7 @@ const tests: DayTests = {
   part2: [
     {
       input,
-      expected: 0,
+      expected: 2286,
     },
   ],
 };
