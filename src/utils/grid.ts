@@ -41,6 +41,22 @@ export function getAdjacentWithDiagonals(
   return DIAGONAL_COORDS.map(([dx, dy]) => [x + dx, y + dy]);
 }
 
+const TOP_BOTTOM_COORDS: [number, number][] = [
+  [-1, -1], // top left
+  [0, -1], // top middle
+  [1, -1], // top right
+  [-1, 1], // bottom left
+  [0, 1], // bottom middle
+  [1, 1], // bottom right
+];
+
+export function getAdjacentWithTopAndBottom(
+  x: number,
+  y: number,
+): [number, number][] {
+  return TOP_BOTTOM_COORDS.map(([dx, dy]) => [x + dx, y + dy]);
+}
+
 /**
  * Checks if given coordinates are within the bounds of a grid.
  * Prevents array out-of-bounds errors in grid traversal.
@@ -209,4 +225,47 @@ export function countInGrid<T>(grid: T[][], value: T): number {
       row.reduce((rowCount, cell) => rowCount + (cell === value ? 1 : 0), 0),
     0,
   );
+}
+
+/**
+ * Finds the first occurrence of a value in a 2D grid
+ * @param grid The 2D grid to search
+ * @param value The value to search for
+ * @returns The position of the first occurrence or null if not found
+ */
+export function findFirstIndexInGrid<T>(
+  grid: T[][],
+  value: T,
+): [number, number] | null {
+  for (let row = 0; row < grid.length; row++) {
+    for (let col = 0; col < grid[row].length; col++) {
+      if (grid[row][col] === value) {
+        return [row, col];
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Finds all occurrences of a value in a 2D grid
+ * @param grid The 2D grid to search
+ * @param value The value to search for
+ * @returns Array of positions where the value was found
+ */
+export function findAllIndexesInGrid<T>(
+  grid: T[][],
+  value: T,
+): [number, number][] {
+  const positions: [number, number][] = [];
+
+  for (let row = 0; row < grid.length; row++) {
+    for (let col = 0; col < grid[row].length; col++) {
+      if (grid[row][col] === value) {
+        positions.push([row, col]);
+      }
+    }
+  }
+
+  return positions;
 }
