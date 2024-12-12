@@ -37,12 +37,12 @@ export async function runTestPart(
       console.log(`  ❌ Example ${index + 1} errored: ${e}`);
       failures.push(`Example ${index + 1} (${e})`);
     }
+  }
 
-    if (!allTestsPassed) {
-      console.log(`\n❌ Part ${partNumber} tests failed:`);
-      failures.forEach((failure) => console.log(`  - ${failure}`));
-      throw new Error(`Part ${partNumber} tests failed`);
-    }
+  if (!allTestsPassed) {
+    console.log(`\n❌ Part ${partNumber} tests failed:`);
+    failures.forEach((failure) => console.log(`  - ${failure}`));
+    throw new Error(`Part ${partNumber} tests failed`);
   }
 
   console.log(`✅ All Part ${partNumber} tests passed!`);
