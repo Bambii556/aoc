@@ -1,5 +1,7 @@
 // src/utils/index.ts
 
+import FastQ from "./classes/fastQ.ts";
+
 // Export commonly used types
 export type Point = [number, number];
 export type Grid<T> = T[][];
@@ -18,3 +20,5 @@ export * from "./ranges.ts";
 export * from "./numbers.ts";
 export * from "./logger.ts";
 export * from "./algos.ts";
+
+export { FastQ };
