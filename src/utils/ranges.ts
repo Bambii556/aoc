@@ -1,30 +1,4 @@
 /**
- * Creates an array of numbers from start to end (inclusive).
- *
- * @example
- * range(1, 4) // Returns [1, 2, 3, 4]
- * range(-2, 1) // Returns [-2, -1, 0, 1]
- *
- * Common use cases:
- * - Creating sequence of numbers
- * - Generating test cases
- * - Iterating over a range
- */
-export function range(start: number, end: number): number[] {
-  return Array.from(
-    { length: end - start + 1 },
-    (_, i) => start + i,
-  );
-}
-
-/**
- * Range and Interval Operations
- * ---------------------------
- * Functions for working with numeric ranges and intervals,
- * often needed in scheduling or range-based puzzles
- */
-
-/**
  * Checks if two ranges have any overlap.
  *
  * @example

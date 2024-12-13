@@ -1,4 +1,4 @@
-import { log } from "../../utils/index.ts";
+import { log, solveCramer } from "../../utils/index.ts";
 import { Solution } from "../../types.ts";
 import { sum } from "../../utils/array.ts";
 
@@ -63,16 +63,18 @@ function calcButtonPressesToWin(
   const [bX, bY] = machine.b;
   const [targetX, targetY] = machine.prize;
 
-  // Cramer's Rule
-  const determinant = aX * bY - bX * aY;
-  if (determinant === 0) return null; // No Solution
+  const solution = solveCramer([[aX, bX], [aY, bY]], [targetX, targetY]);
 
-  const a = (targetX * bY - bX * targetY) / determinant;
-  const b = (aX * targetY - targetX * aY) / determinant;
+  if (!solution) return null;
 
-  if (a < 0 || b < 0 || !Number.isInteger(a) || !Number.isInteger(b)) {
+  const [pressA, pressB] = solution;
+
+  if (
+    pressA < 0 || pressB < 0 || !Number.isInteger(pressA) ||
+    !Number.isInteger(pressB)
+  ) {
     return null;
   }
 
-  return [a, b];
+  return [pressA, pressB];
 }

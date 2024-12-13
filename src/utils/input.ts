@@ -129,23 +129,6 @@ export function parseInstructions(input: string): [string, number][] {
 }
 
 /**
- * Parse input to binary matrix
- *
- * @example
- * // #.#
- * // .#.
- * parseBinaryGrid(input, '#', '.') // [[1,0,1], [0,1,0]]
- */
-export function parseBinaryGrid(
-  input: string,
-  one = "#",
-  zero = ".",
-): number[][] {
-  return input.split("\n")
-    .map((line) => [...line].map((c) => c === one ? 1 : 0));
-}
-
-/**
  * Parse range notation "a-b"
  *
  * @example

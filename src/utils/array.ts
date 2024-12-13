@@ -41,15 +41,16 @@ export function product(numbers: number[]): number {
 }
 
 /**
- * Extracts all numbers (including negative) from a string.
- * Useful when parsing input with embedded numbers.
+ * Extracts numbers from a text string.
  *
- * @example
- * findNumbers("There are 12 months and -2 seasons")
- * // Returns [12, -2]
+ * @param text - The input text to parse
+ * @param includeNegatives - Whether to include negative numbers in results
+ * @returns Array of numbers found in the text
  */
-export function findNumbers(text: string): number[] {
-  const matches = text.match(/-?\d+/g);
+export function findNumbers(text: string, includeNegatives = false): number[] {
+  // Choose regex pattern based on whether to include negatives
+  const pattern = includeNegatives ? /-?\d+/g : /\d+/g;
+  const matches = text.match(pattern);
   return matches ? matches.map(Number) : [];
 }
 
@@ -752,4 +753,111 @@ export function removeAtIndexInPlace<T>(arr: T[], index: number): void {
 
   // Modify array in place
   arr.splice(index, 1);
+}
+
+/**
+ * Generate all permutations of an array
+ * Optimized version using Heap's Algorithm
+ *
+ * Performance characteristics:
+ * - Time: O(n!) - can't avoid this as it's generating all permutations
+ * - Space: O(n) - better than O(n!) of recursive version
+ *
+ * When to use:
+ * - Need all possible arrangements
+ * - Array size <= 8 (8! = 40320 permutations)
+ * - Order matters
+ * - Performance is critical
+ *
+ * When not to use:
+ * - Arrays longer than 8 elements
+ * - Only need some permutations
+ * - Order doesn't matter
+ *
+ * @example
+ * getPermutations([1, 2]) // Returns [[1,2], [2,1]]
+ *
+ * How it works:
+ * 1. Base case: array of 1 or 0 elements returns itself
+ * 2. For each element:
+ *   - Take it as the first element
+ *   - Get permutations of remaining elements
+ *   - Add current element to front of each sub-permutation
+ */
+export function getPermutations<T>(array: T[]): T[][] {
+  if (array.length <= 1) return [array.slice()];
+  if (array.length > 8) {
+    // throw new Error("Array too large, permutations would exceed 40320");
+    return getPermutationsLarger(array);
+  }
+
+  const result: T[][] = [];
+  const len = array.length;
+  const c = new Array(len).fill(0);
+
+  // Add first permutation
+  result.push(array.slice());
+
+  let i = 0;
+  while (i < len) {
+    if (c[i] < i) {
+      // Swap elements
+      const k = i % 2 && c[i];
+      const temp = array[i];
+      array[i] = array[k];
+      array[k] = temp;
+
+      // Add new permutation
+      result.push(array.slice());
+
+      // Increment count
+      c[i]++;
+      i = 0;
+    } else {
+      c[i] = 0;
+      i++;
+    }
+  }
+
+  return result;
+}
+
+function getPermutationsLarger<T>(array: T[]): T[][] {
+  if (array.length <= 1) return [array];
+
+  const result: T[][] = [];
+  for (let i = 0; i < array.length; i++) {
+    const current = array[i]; // Element to put first
+    const remaining = [ // All other elements
+      ...array.slice(0, i),
+      ...array.slice(i + 1),
+    ];
+    // Recursively get permutations of remaining elements
+    const permutations = getPermutations(remaining);
+
+    // Add current element to front of each sub-permutation
+    for (const permutation of permutations) {
+      result.push([current, ...permutation]);
+    }
+  }
+  return result;
+}
+
+/**
+ * Creates an array of numbers from start to end (inclusive).
+ *
+ * @example
+ * range(1, 4) // Returns [1, 2, 3, 4]
+ * range(-2, 1) // Returns [-2, -1, 0, 1]
+ *
+ * Common use cases:
+ * - Creating sequence of numbers
+ * - Generating test cases
+ * - Iterating over a range
+ */
+export function range(start: number, end: number): number[] {
+  return Array.from(
+    { length: end - start + 1 },
+    (_, i) => start + i,
+  );
 }

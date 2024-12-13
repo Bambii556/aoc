@@ -1,11 +1,4 @@
 /**
- * Set Operations
- * -------------
- * Functions for working with Sets, commonly needed in puzzles
- * involving groups, collections, or comparisons
- */
-
-/**
  * Returns a new Set containing elements present in both input Sets.
  *
  * @example

@@ -1,5 +1,5 @@
 import {
-  countInGrid,
+  countOccurrencesInGrid,
   getInputLines,
   isInBounds,
   log,

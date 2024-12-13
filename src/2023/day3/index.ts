@@ -1,5 +1,5 @@
 import {
-  findAllIndexesInGrid,
+  findAllOccurrencesIndexesInGrid,
   getAdjacentWithDiagonals,
   isInBounds,
   parseGrid,
@@ -35,7 +35,7 @@ export const day3: Solution = {
     const grid = parseGrid(input);
     const gears: number[] = [];
 
-    const gearLocations = findAllIndexesInGrid(grid, "*");
+    const gearLocations = findAllOccurrencesIndexesInGrid(grid, "*");
 
     for (const [gearX, gearY] of gearLocations) {
       const numbers = getNumbersAroundPosition(gearX, gearY, grid);

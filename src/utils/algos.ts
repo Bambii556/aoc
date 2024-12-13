@@ -1,4 +1,71 @@
 /**
+ * Solves a system of linear equations using Cramer's Rule.
+ *
+ * When to use:
+ * - Solving 2x2 or 3x3 systems of linear equations
+ * - Need exact solutions rather than approximations
+ * - System has a unique solution
+ * - Coefficients are known constants
+ *
+ * When not to use:
+ * - Large systems of equations (4x4 or larger)
+ * - System may be singular (no unique solution)
+ * - Coefficients are floating point and precision is critical
+ * - System is sparse (many zero coefficients)
+ *
+ * @example
+ * // Solve system:
+ * // 2x + 3y = 8
+ * // 4x + 9y = 22
+ * solveCramer([[2,3], [4,9]], [8,22])
+ * // Returns [1,2] (x=1, y=2)
+ *
+ * How it works:
+ * 1. Calculate main determinant (D) from coefficient matrix
+ * 2. For each variable:
+ *    - Replace corresponding column with constants
+ *    - Calculate new determinant (Dx, Dy)
+ *    - Solution for variable is Dx/D or Dy/D
+ * 3. Verify solution exists (D ≠ 0)
+ *
+ * Common use cases:
+ * - Finding intersection points
+ * - Calculating unknown quantities in physics
+ * - Balancing chemical equations
+ * - Game mechanics requiring exact solutions
+ *
+ * @param coefficients - Matrix of coefficients where each row is [a,b] for ax + by = c
+ * @param constants - Array of constant terms [c1,c2]
+ * @returns Solution array [x,y] or null if no solution exists
+ */
+export function solveCramer(
+  coefficients: [number, number][],
+  constants: number[],
+): [number, number] | null {
+  // Extract coefficients
+  const [[a11, a12], [a21, a22]] = coefficients;
+  const [b1, b2] = constants;
+
+  // Calculate main determinant
+  const D = a11 * a22 - a12 * a21;
+
+  // Check if system has a solution
+  if (D === 0) {
+    return null;
+  }
+
+  // Calculate determinants for x and y
+  const Dx = b1 * a22 - b2 * a12;
+  const Dy = a11 * b2 - b1 * a21;
+
+  // Calculate solutions
+  const x = Dx / D;
+  const y = Dy / D;
+
+  return [x, y];
+}
+
+/**
  * Binary GCD Algorithm (Binary Euclidean Algorithm)
  * Finds the largest number that divides both inputs with no remainder
  *
@@ -158,124 +225,6 @@ export function lcmArray(numbers: number[]): number {
 }
 
 /**
- * Generate all permutations of an array
- * Optimized version using Heap's Algorithm
- *
- * Performance characteristics:
- * - Time: O(n!) - can't avoid this as it's generating all permutations
- * - Space: O(n) - better than O(n!) of recursive version
- *
- * When to use:
- * - Need all possible arrangements
- * - Array size <= 8 (8! = 40320 permutations)
- * - Order matters
- * - Performance is critical
- *
- * When not to use:
- * - Arrays longer than 8 elements
- * - Only need some permutations
- * - Order doesn't matter
- *
- * @example
- * getPermutations([1, 2]) // Returns [[1,2], [2,1]]
- *
- * How it works:
- * 1. Base case: array of 1 or 0 elements returns itself
- * 2. For each element:
- *   - Take it as the first element
- *   - Get permutations of remaining elements
- *   - Add current element to front of each sub-permutation
- */
-export function getPermutations<T>(array: T[]): T[][] {
-  if (array.length <= 1) return [array.slice()];
-  if (array.length > 8) {
-    // throw new Error("Array too large, permutations would exceed 40320");
-    return getPermutationsLarger(array);
-  }
-
-  const result: T[][] = [];
-  const len = array.length;
-  const c = new Array(len).fill(0);
-
-  // Add first permutation
-  result.push(array.slice());
-
-  let i = 0;
-  while (i < len) {
-    if (c[i] < i) {
-      // Swap elements
-      const k = i % 2 && c[i];
-      const temp = array[i];
-      array[i] = array[k];
-      array[k] = temp;
-
-      // Add new permutation
-      result.push(array.slice());
-
-      // Increment count
-      c[i]++;
-      i = 0;
-    } else {
-      c[i] = 0;
-      i++;
-    }
-  }
-
-  return result;
-}
-
-function getPermutationsLarger<T>(array: T[]): T[][] {
-  if (array.length <= 1) return [array];
-
-  const result: T[][] = [];
-  for (let i = 0; i < array.length; i++) {
-    const current = array[i]; // Element to put first
-    const remaining = [ // All other elements
-      ...array.slice(0, i),
-      ...array.slice(i + 1),
-    ];
-    // Recursively get permutations of remaining elements
-    const permutations = getPermutations(remaining);
-
-    // Add current element to front of each sub-permutation
-    for (const permutation of permutations) {
-      result.push([current, ...permutation]);
-    }
-  }
-  return result;
-}
-
-/**
- * Convert binary string to decimal number
- *
- * When to use:
- * - Binary string conversion problems
- * - Bit manipulation puzzles
- * - Binary pattern matching
- *
- * When not to use:
- * - Already have number type
- * - Non-binary strings
- * - Numbers exceeding safe integer
- *
- * @example
- * binaryToDecimal('1101') // Returns 13
- * binaryToDecimal('00001111') // Returns 15
- *
- * // Use in pattern matching
- * const patterns = ['1010', '1100', '1111'];
- * const values = patterns.map(binaryToDecimal);
- */
-export function binaryToDecimal(binary: string): number {
-  let result = 0;
-  for (let i = 0; i < binary.length; i++) {
-    result = (result << 1) | (binary[i] === "1" ? 1 : 0);
-  }
-  return result;
-  // Faster than parseInt(binary, 2) for longer strings
-}
-
-/**
  * Optimized mode (most frequent value) calculator
  *
  * When to use:
@@ -313,4 +262,95 @@ export function mode<T>(arr: T[]): T {
   }
 
   return maxItem;
+}
+
+/**
+ * Calculate Manhattan distance between two points.
+ * Manhattan distance is the sum of absolute differences of coordinates.
+ * Also known as L1 distance or taxicab distance.
+ *
+ * When to use:
+ * - Grid-based movement with only cardinal directions (no diagonals)
+ * - Finding minimum steps between points on a grid
+ * - Distance calculations in maze/path problems
+ * - When diagonal movement is not allowed
+ * - Computing distances in 2D coordinate systems
+ *
+ * When not to use:
+ * - Diagonal movement is allowed (use Euclidean distance)
+ * - Need exact geometric distance
+ * - Working in 3D space
+ * - Need curved/non-grid paths
+ * - When movement costs are not uniform
+ *
+ * @example
+ * manhattanDistance(1, 1, 4, 5) // Returns 7
+ * // Because |1-4| + |1-5| = 3 + 4 = 7
+ *
+ * How it works:
+ * - Takes absolute difference of x coordinates
+ * - Takes absolute difference of y coordinates
+ * - Sums these differences
+ *
+ * Common use cases:
+ * - Path finding in grid-based puzzles
+ * - Calculating minimum steps between points
+ * - Measuring distance when diagonal moves aren't allowed
+ */
+export function manhattanDistance(
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+): number {
+  return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+}
+
+/**
+ * Creates a memoized version of any function.
+ * Caches results based on stringified arguments.
+ *
+ * When to use:
+ * - Expensive recursive calculations
+ * - Pure functions
+ * - Repeated calls with same args
+ * - Dynamic programming
+ *
+ * When not to use:
+ * - Functions with side effects
+ * - Memory constrained
+ * - Arguments not serializable
+ * - Random/time-dependent functions
+ *
+ * How it works:
+ * 1. Creates a cache using Map
+ * 2. Converts arguments to string for cache key
+ * 3. Returns cached result if available
+ * 4. Otherwise computes and caches new result
+ *
+ * @param fn - Function to memoize
+ * @returns Memoized version of the function
+ *
+ * @example
+ * const memoizedFib = memoize((n: number): number => {
+ *   if (n <= 1) return n;
+ *   return memoizedFib(n - 1) + memoizedFib(n - 2);
+ * });
+ */
+export function memoize<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => TResult,
+): (...args: TArgs) => TResult {
+  const cache = new Map<string, TResult>();
+
+  return (...args: TArgs): TResult => {
+    const key = JSON.stringify(args);
+
+    if (cache.has(key)) {
+      return cache.get(key)!;
+    }
+
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  };
 }

@@ -75,86 +75,6 @@ export function isInBounds<T>(
 }
 
 /**
- * Convert a point to a string key for use in Maps/Sets.
- * Useful for caching or storing points as unique identifiers.
- *
- * @example
- * const point = pointToString(2, 3); // Returns "2,3"
- * const visited = new Set<string>();
- * visited.add(pointToString(x, y));
- *
- * Common use cases:
- * - Tracking visited positions in grid traversal
- * - Creating unique keys for coordinate pairs
- * - Converting points for Set/Map storage
- */
-export function pointToString(x: number, y: number): string {
-  return `${x},${y}`;
-}
-
-/**
- * Convert a string key back to point coordinates.
- * Inverse of pointToString function.
- *
- * @example
- * const [x, y] = stringToPoint("2,3"); // Returns [2, 3]
- *
- * Common use cases:
- * - Retrieving coordinates from cached points
- * - Converting stored points back to coordinates
- * - Processing point data from string format
- */
-export function stringToPoint(
-  str: string,
-  delimiter: string = ",",
-): [number, number] {
-  const [x, y] = str.split(delimiter).map(Number);
-  return [x, y];
-}
-
-/**
- * Calculate Manhattan distance between two points.
- * Manhattan distance is the sum of absolute differences of coordinates.
- * Also known as L1 distance or taxicab distance.
- *
- * When to use:
- * - Grid-based movement with only cardinal directions (no diagonals)
- * - Finding minimum steps between points on a grid
- * - Distance calculations in maze/path problems
- * - When diagonal movement is not allowed
- * - Computing distances in 2D coordinate systems
- *
- * When not to use:
- * - Diagonal movement is allowed (use Euclidean distance)
- * - Need exact geometric distance
- * - Working in 3D space
- * - Need curved/non-grid paths
- * - When movement costs are not uniform
- *
- * @example
- * manhattanDistance(1, 1, 4, 5) // Returns 7
- * // Because |1-4| + |1-5| = 3 + 4 = 7
- *
- * How it works:
- * - Takes absolute difference of x coordinates
- * - Takes absolute difference of y coordinates
- * - Sums these differences
- *
- * Common use cases:
- * - Path finding in grid-based puzzles
- * - Calculating minimum steps between points
- * - Measuring distance when diagonal moves aren't allowed
- */
-export function manhattanDistance(
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number,
-): number {
-  return Math.abs(x1 - x2) + Math.abs(y1 - y2);
-}
-
-/**
  * Rotate a grid 90 degrees clockwise
  *
  * When to use:
@@ -218,7 +138,7 @@ export function rotateGrid<T>(grid: T[][]): T[][] {
  * const numGrid = [[1,2,1], [1,3,2]]
  * countInGrid(numGrid, 1) // Returns 3
  */
-export function countInGrid<T>(grid: T[][], value: T): number {
+export function countOccurrencesInGrid<T>(grid: T[][], value: T): number {
   return grid.reduce(
     (count, row) =>
       count +
@@ -233,7 +153,7 @@ export function countInGrid<T>(grid: T[][], value: T): number {
  * @param value The value to search for
  * @returns The position of the first occurrence or null if not found
  */
-export function findFirstIndexInGrid<T>(
+export function findFirstOccurrencesIndexInGrid<T>(
   grid: T[][],
   value: T,
 ): [number, number] | null {
@@ -253,7 +173,7 @@ export function findFirstIndexInGrid<T>(
  * @param value The value to search for
  * @returns Array of positions where the value was found
  */
-export function findAllIndexesInGrid<T>(
+export function findAllOccurrencesIndexesInGrid<T>(
   grid: T[][],
   value: T,
 ): [number, number][] {
