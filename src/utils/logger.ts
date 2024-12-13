@@ -1,15 +1,28 @@
-export async function timer<T>(
+export function timerSync<T>(
   timerName: string,
-  fn: () => Promise<T> | T,
-  reset?: boolean,
-) {
+  fn: () => T,
+  reset: boolean = false,
+): T {
+  if (reset) {
+    console.countReset(timerName);
+  }
+  console.time(timerName);
+  const result = fn();
+  console.timeEnd(timerName);
+  return result;
+}
+
+export async function timerAsync<T>(
+  timerName: string,
+  fn: () => Promise<T>,
+  reset: boolean = false,
+): Promise<T> {
   if (reset) {
     console.countReset(timerName);
   }
   console.time(timerName);
   const result = await fn();
   console.timeEnd(timerName);
-
   return result;
 }
 

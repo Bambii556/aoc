@@ -356,11 +356,11 @@ export function unique<T>(arr: T[]): T[] {
  * @example
  * zip([1,2,3], ['a','b','c']) // [[1,'a'], [2,'b'], [3,'c']]
  */
-export function zip<T>(...arrays: T[][]): T[][] {
-  const minLength = Math.min(...arrays.map((x) => x.length));
+export function zip<T1, T2>(arr1: T1[], arr2: T2[]): [T1, T2][] {
+  const minLength = Math.min(arr1.length, arr2.length);
   return Array.from(
     { length: minLength },
-    (_, i) => arrays.map((array) => array[i]),
+    (_, i) => [arr1[i], arr2[i]],
   );
 }
 
@@ -463,16 +463,55 @@ export function transpose<T>(matrix: T[][]): T[][] {
  * - Range operations
  *
  * @example
- * sequence(1, 5) // [1,2,3,4,5]
- * sequence(2, 10, 2) // [2,4,6,8,10]
+ * sequence(1, 5)      // [1,2,3,4,5]
+ * sequence(5, 1)      // [5,4,3,2,1]
+ * sequence(2, 10, 2)  // [2,4,6,8,10]
+ * sequence(10, 2, -2) // [10,8,6,4,2]
  */
-export function sequence(start: number, end: number, step = 1): number[] {
-  // Use TypedArray for better performance with numbers
-  const length = Math.floor((end - start) / step) + 1;
+export function sequenceFromRange(
+  start: number,
+  end: number,
+  step = start <= end ? 1 : -1,
+): number[] {
+  // Validate step direction
+  if ((start <= end && step <= 0) || (start >= end && step >= 0)) {
+    return [];
+  }
+
+  const length = Math.floor(Math.abs((end - start) / step)) + 1;
   const arr = new Float64Array(length);
+
   for (let i = 0; i < length; i++) {
     arr[i] = start + (i * step);
   }
+
+  return Array.from(arr);
+}
+
+/**
+ * Generate sequence of numbers starting from a number, incrementing by a value, for n steps
+ *
+ * @param start - Starting number
+ * @param increment - Value to increment by each step
+ * @param steps - Number of steps to take
+ * @returns Array of numbers in sequence
+ *
+ * @example
+ * generateSequence(1, 2, 3)  // [1,3,5]
+ * generateSequence(10, -2, 4) // [10,8,6,4]
+ * generateSequence(0, 5, 5)  // [0,5,10,15,20]
+ */
+export function sequenceFromSteps(
+  start: number,
+  steps: number,
+  increment: number = 1,
+): number[] {
+  const arr = new Float64Array(steps);
+
+  for (let i = 0; i < steps; i++) {
+    arr[i] = start + (i * increment);
+  }
+
   return Array.from(arr);
 }
 
