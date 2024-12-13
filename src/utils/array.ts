@@ -845,19 +845,53 @@ function getPermutationsLarger<T>(array: T[]): T[][] {
 
 /**
  * Creates an array of numbers from start to end (inclusive).
+ * Can handle ascending or descending order.
+ *
+ * @param start - Starting number
+ * @param end - Ending number (inclusive)
+ * @returns Array of numbers in sequence
  *
  * @example
- * range(1, 4) // Returns [1, 2, 3, 4]
- * range(-2, 1) // Returns [-2, -1, 0, 1]
+ * range(1, 4)    // Returns [1, 2, 3, 4]
+ * range(4, 1)    // Returns [4, 3, 2, 1]
  *
  * Common use cases:
  * - Creating sequence of numbers
  * - Generating test cases
  * - Iterating over a range
+ * - Counting down or up
  */
-export function range(start: number, end: number): number[] {
+export function createRange(start: number, end: number): number[] {
+  // Determine if counting up or down
+  const isAscending = start <= end;
+
+  // Use provided step or default based on direction
+  const stepValue = isAscending ? 1 : -1;
+
+  // Calculate length based on direction
+  const length = Math.floor(Math.abs(end - start) / Math.abs(stepValue)) + 1;
+
   return Array.from(
-    { length: end - start + 1 },
-    (_, i) => start + i,
+    { length },
+    (_, i) => start + (i * stepValue),
   );
+}
+
+/**
+ * Returns numbers from the first array that appear in the second array.
+ * Uses Set for O(n) lookup performance.
+ *
+ * @param first - First array to check numbers from
+ * @param second - Second array to check against
+ * @returns Array of numbers that exist in both arrays, in order of first array
+ *
+ * @example
+ * findCommonNumbers([1,2,3,4], [2,4,6,8]) // Returns [2,4]
+ */
+export function findCommonNumbers(first: number[], second: number[]): number[] {
+  // Convert second array to Set for O(1) lookups
+  const secondSet = new Set(second);
+
+  // Filter first array to only include numbers present in second array
+  return first.filter((num) => secondSet.has(num));
 }
