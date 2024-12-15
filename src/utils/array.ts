@@ -211,59 +211,6 @@ export function findAllMatches(
 }
 
 /**
- * Create a 2D array with optimizations for numeric types
- *
- * When to use:
- * - Creating grids/matrices
- * - Need memory efficient 2D arrays
- * - Working with numeric grids
- * - Dynamic programming tables
- *
- * When not to use:
- * - Need jagged arrays
- * - Dynamic sizing needed
- * - Need sparse matrix
- * - Complex objects as values
- *
- * @example
- * create2DArray(3, 3, 0)  // number[][]
- * create2DArray(2, 2, false)  // boolean[][]
- * create2DArray(2, 2, '.') // string[][]
- */
-export function create2DArray<T>(
-  rows: number,
-  cols: number,
-  defaultValue: T,
-): T[][] {
-  // Special case for small unsigned integers
-  if (
-    typeof defaultValue === "number" &&
-    Number.isInteger(defaultValue) &&
-    defaultValue >= 0 &&
-    defaultValue < 256
-  ) {
-    const buffer = new Array(rows);
-    const uint8Array = new Uint8Array(cols);
-    uint8Array.fill(defaultValue);
-
-    for (let i = 0; i < rows; i++) {
-      buffer[i] = new Uint8Array(cols);
-      buffer[i].set(uint8Array);
-    }
-
-    return buffer as unknown as T[][];
-  }
-
-  // For all other types
-  const grid: T[][] = new Array(rows);
-  for (let i = 0; i < rows; i++) {
-    grid[i] = new Array(cols).fill(defaultValue);
-  }
-
-  return grid;
-}
-
-/**
  * Efficient array intersection check using Set
  *
  * When to use:
