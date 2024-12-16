@@ -104,7 +104,7 @@ export function aStar(
  * const cameFrom = new Map([['B','A'], ['C','B']]);
  * reconstructPath(cameFrom, 'C') // Returns ['A', 'B', 'C']
  */
-function reconstructPath(
+export function reconstructPath(
   cameFrom: Map<string, string>,
   current: string,
 ): string[] {
@@ -266,7 +266,7 @@ export function bfs(
  * Optimized Priority Queue implementation
  * Uses binary heap for O(log n) operations
  */
-class PriorityQueue<T> {
+export class PriorityQueue<T> {
   private heap: Array<[number, T]>;
 
   constructor(initialCapacity = 16) {
