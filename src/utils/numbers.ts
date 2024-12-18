@@ -233,8 +233,33 @@ export function scale(
   return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
 
-export function isEven(num: number): boolean {
-  return num % 2 === 0;
+/**
+ * Check if a number is even
+ * Bitwise even/odd check (faster than modulo)
+ *
+ * When to use:
+ * - Need to know if a number is divisible by 2
+ * - Even/odd checks
+ * - Checking parity
+ */
+export function isEven(num: number, useBitwise: boolean = true): boolean {
+  return useBitwise ? (num & 1) === 0 : num % 2 === 0;
+}
+
+/**
+ * Check if a number is odd
+ * Bitwise even/odd check (faster than modulo)
+ */
+export function isOdd(n: number): boolean {
+  return (n & 1) === 1;
+}
+
+/*
+ * Modulo with positive result
+ * Returns positive remainder when dividing n by m
+ */
+export function mod(n: number, m: number): number {
+  return ((n % m) + m) % m;
 }
 
 /**
