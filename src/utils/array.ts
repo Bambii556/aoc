@@ -26,8 +26,11 @@ export function countOccurrences<T>(array: T[], value: T): number {
  * @example
  * sum([1,2,3,4]) // Returns 10
  */
-export function sum(numbers: number[]): number {
-  return numbers.reduce((a, b) => a + b, 0);
+export function sum<T>(arr: T[], mapper?: (item: T) => number): number {
+  if (mapper) {
+    return arr.reduce((acc, val) => acc + mapper(val), 0);
+  }
+  return arr.reduce((acc, val) => acc + (val as unknown as number), 0);
 }
 
 /**

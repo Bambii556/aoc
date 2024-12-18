@@ -1,4 +1,4 @@
-import { getInputLines, sum } from "../../utils/index.ts";
+import { getInputLines, RegexPatterns, sum } from "../../utils/index.ts";
 import { Solution } from "../../types.ts";
 
 export const day1: Solution = {
@@ -45,7 +45,7 @@ function findFirstAndLastNumber(line: string): [number, number] {
 
   // Find all digits first
   for (let i = 0; i < line.length; i++) {
-    if (/\d/.test(line[i])) {
+    if (RegexPatterns.numbers.test(line[i])) {
       if (firstNum === null) firstNum = { value: line[i], index: i };
       lastNum = { value: line[i], index: i };
     }

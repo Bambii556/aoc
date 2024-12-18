@@ -1,4 +1,4 @@
-import { log, solveCramer } from "../../utils/index.ts";
+import { log, RegexPatterns, solveCramer } from "../../utils/index.ts";
 import { Solution } from "../../types.ts";
 import { sum } from "../../utils/array.ts";
 
@@ -43,7 +43,7 @@ function parseClawMachines(
   const correction = 10000000000000;
 
   return entries.map((entry) => {
-    const numbers = entry.match(/\d+/g)!.map(Number);
+    const numbers = entry.match(RegexPatterns.numbers)!.map(Number);
 
     return {
       a: [numbers[0], numbers[1]],

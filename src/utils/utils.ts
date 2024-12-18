@@ -118,3 +118,11 @@ export function binarySearchAnswer(
   }
   return low;
 }
+
+export const RegexPatterns = {
+  numbers: /\d+/g,
+  numbersWithNegative: /(-?\d+)/g,
+  words: /\w+/g,
+  coordinates: /\((\d+),\s*(\d+)\)/,
+  hexColor: /#[0-9a-f]{6}/i,
+};

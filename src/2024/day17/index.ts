@@ -1,4 +1,5 @@
 import { Solution } from "../../types.ts";
+import { RegexPatterns } from "../../utils/utils.ts";
 
 type ProgramState = {
   a: number;
@@ -23,7 +24,7 @@ export const day17: Solution = {
 };
 
 function parseInput(input: string): ProgramState {
-  const numbers = input.match(/\d+/g)?.map(Number) || [];
+  const numbers = input.match(RegexPatterns.numbers)?.map(Number) || [];
   const [a, b, c, ...program] = numbers;
 
   return {

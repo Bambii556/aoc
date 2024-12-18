@@ -1,6 +1,7 @@
 // src/utils/index.ts
 
 import FastQ from "./classes/fastQ.ts";
+import Graph from "./classes/Graph.ts";
 
 // Export commonly used types
 export type Point = [number, number];
@@ -21,4 +22,4 @@ export * from "./numbers.ts";
 export * from "./logger.ts";
 export * from "./algos.ts";
 
-export { FastQ };
+export { FastQ, Graph };

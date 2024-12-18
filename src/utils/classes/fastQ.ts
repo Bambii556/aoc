@@ -1,3 +1,13 @@
+/**
+ * Optimized Fast Queue implementation
+ * Uses binary heap for O(1) operations
+ * Memory: O(n) but with some overhead due to the object storage
+ *
+ * FastQ is better for:
+ * - Regular FIFO/LIFO operations
+ * - When you need both front and back operations
+ * - When order doesn't matter
+ */
 export default class FastQ<T> {
   private head: number = 0;
   private tail: number = 0;

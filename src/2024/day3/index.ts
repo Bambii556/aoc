@@ -1,4 +1,4 @@
-import { log, sum } from "../../utils/index.ts";
+import { log, RegexPatterns, sum } from "../../utils/index.ts";
 import { Solution } from "../../types.ts";
 
 interface Match {
@@ -19,7 +19,7 @@ export const day3: Solution = {
     const matches = [...input.matchAll(new RegExp(pattern, "g"))];
 
     const instructions = matches.map((match) => {
-      const [a, b] = match[0].match(/\d+/g)!;
+      const [a, b] = match[0].match(RegexPatterns.numbers)!;
       return { a: parseInt(a), b: parseInt(b) };
     });
 
@@ -75,7 +75,7 @@ export const day3: Solution = {
       }
 
       if (enabled && m.type === MatchType.MUL) {
-        const [a, b] = m.value.match(/\d+/g)!;
+        const [a, b] = m.value.match(RegexPatterns.numbers)!;
         result.push(parseInt(a) * parseInt(b));
       }
     }
