@@ -2,12 +2,12 @@ import { DayTests, runTestPart } from "../../utils/test_utils.ts";
 import { day12 as solution } from "./index.ts";
 import { log } from "../../utils/index.ts";
 
-const input = `#.#.### 1,1,3
-.#...#....###. 1,1,3
-.#.###.#.###### 1,3,1,6
-####.#...#... 4,1,1
-#....######..#####. 1,6,5
-.###.##....# 3,2,1`;
+const input = `???.### 1,1,3
+.??..??...?##. 1,1,3
+?#?#?#?#?#?#?#? 1,3,1,6
+????.#...#... 4,1,1
+????.######..#####. 1,6,5
+?###???????? 3,2,1`;
 
 const tests: DayTests = {
   part1: [
@@ -19,7 +19,7 @@ const tests: DayTests = {
   part2: [
     {
       input,
-      expected: 0,
+      expected: 525152,
     },
   ],
 };
