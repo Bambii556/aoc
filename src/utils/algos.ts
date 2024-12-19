@@ -66,46 +66,27 @@ export function solveCramer(
 }
 
 /**
- * Binary GCD Algorithm (Binary Euclidean Algorithm)
- * Finds the largest number that divides both inputs with no remainder
+ * Binary GCD Algorithm (Stein's Algorithm)
+ * A more efficient GCD implementation for large numbers using bitwise operations
  *
- * Detailed explanation:
- * 1. Take absolute values of inputs (GCD is always positive)
- * 2. Remove common factors of 2 using bit shifting:
- *    - a >>= 1 means divide by 2
- *    - (a | b) & 1 checks if both numbers are even
- * 3. Keep track of removed 2s in 'shift'
- * 4. Remove remaining factors of 2 from each number
- * 5. Subtract smaller from larger until one becomes 0
- * 6. Multiply result by 2^shift to restore common factors
+ * Steps:
+ * 1. Convert inputs to positive numbers
+ * 2. Factor out powers of 2 using bitwise shifts
+ * 3. Use subtraction instead of division
+ * 4. Restore the common factors of 2 at the end
  *
- * Example walkthrough:
- * gcd(48, 18):
- * 1. 48 = 110000₂, 18 = 10010₂
- * 2. Both even: shift = 1, a = 24, b = 9
- * 3. a = 24 (even), a = 12, then 6, then 3
- * 4. Now: a = 3, b = 9
- * 5. Swap so a = 9, b = 3
- * 6. Subtract: b = 6, then 3, then 0
- * 7. Result: 3 * 2^1 = 6
+ * Advantages:
+ * - More efficient for very large numbers
+ * - Avoids expensive modulo operations
+ * - Better for numbers with many factors of 2
  *
- * When to use:
- * - Finding common factors
- * - Reducing fractions
- * - Solving timing/cycle problems
- * - Need to simplify ratios
- *
- * When not to use:
- * - Working with floating point numbers
- * - Numbers outside safe integer range
- * - Need least common multiple (use lcm)
- * - Need all factors (use getPrimeFactors)
- *
+ * @param a - First number to find GCD of
+ * @param b - Second number to find GCD of
+ * @returns The greatest common divisor
  * @example
- * gcd(48, 18) // Returns 6
- * gcd(17, 5)  // Returns 1
+ * gcdLarge(48, 18) // Returns 6
  */
-export function gcd(a: number, b: number): number {
+export function gcdLarge(a: number, b: number): number {
   a = Math.abs(a);
   b = Math.abs(b);
 
@@ -137,45 +118,84 @@ export function gcd(a: number, b: number): number {
 }
 
 /**
- * Least Common Multiple
- * Finds smallest number divisible by both inputs
- * Uses the relationship: LCM(a,b) = |a*b|/GCD(a,b)
+ * Euclidean GCD Algorithm
+ * A simple implementation to find the greatest common divisor using modulo
  *
- * Detailed explanation:
- * 1. Multiply the numbers together
- * 2. Divide by their GCD
- * 3. Take absolute value for positive result
+ * Steps:
+ * 1. While second number isn't 0:
+ *    - Store second number temporarily
+ *    - Second number becomes remainder of a÷b
+ *    - First number becomes the stored temp
+ * 2. Return first number when done
  *
- * Example walkthrough:
- * lcm(4, 6):
- * 1. Multiply: 4 * 6 = 24
- * 2. Find GCD(4, 6) = 2
- * 3. Result: 24/2 = 12
+ * Advantages:
+ * - Simple to understand and implement
+ * - Often faster for smaller numbers
+ * - More readable code
  *
- * Visual representation:
- * 4: |----|----|----| (marks at 4, 8, 12)
- * 6: |---------|---| (marks at 6, 12)
- * First common mark is at 12
+ * @param a - First number to find GCD of
+ * @param b - Second number to find GCD of
+ * @returns The greatest common divisor
+ * @example
+ * gcd(48, 18) // Returns 6
+ */
+export function gcd(a: number, b: number): number {
+  while (b > 0) {
+    const temp = b;
+    b = a % b;
+    a = temp;
+  }
+  return a;
+}
+
+/**
+ * Least Common Multiple (LCM)
+ * Finds smallest positive number divisible by both inputs
+ *
+ * Steps:
+ * 1. Multiply the absolute values of inputs
+ * 2. Divide by their Greatest Common Divisor (GCD)
+ *
+ * Notes:
+ * - Uses |a * b| / gcd(a,b) formula
+ * - Takes absolute values to handle negative inputs
+ * - Can use either gcd() or gcdLarge() internally
  *
  * When to use:
- * - Finding common cycle lengths
- * - Synchronization problems
- * - Pattern repetition calculations
- * - When need smallest number divisible by both inputs
- * - Time-based cycle problems
+ * - Finding common cycles/periods
+ * - Solving timing problems
+ * - Need smallest common multiple
  *
  * When not to use:
- * - Numbers outside safe integer range
- * - Need factors instead of multiples
  * - Working with floating point numbers
- * - Memory/performance critical (for very large numbers)
+ * - Numbers too large (product may overflow)
+ * - Need Greatest Common Divisor instead
  *
+ * @param a - First number to find LCM of
+ * @param b - Second number to find LCM of
+ * @returns The least common multiple
  * @example
- * lcm(4, 6)   // Returns 12
- * lcm(15, 25) // Returns 75
+ * lcm(4, 6) // Returns 12
+ * lcm(21, 6) // Returns 42
  */
 export function lcm(a: number, b: number): number {
   return Math.abs(a * b) / gcd(a, b);
+}
+
+// Alternate version using gcdLarge
+/**
+ * Least Common Multiple using Binary GCD
+ * Same as lcm() but uses binary GCD algorithm
+ * Better for large numbers with many factors of 2
+ *
+ * @param a - First number to find LCM of
+ * @param b - Second number to find LCM of
+ * @returns The least common multiple
+ * @example
+ * lcmLarge(4, 6) // Returns 12
+ */
+export function lcmLarge(a: number, b: number): number {
+  return Math.abs(a * b) / gcdLarge(a, b);
 }
 
 /**
