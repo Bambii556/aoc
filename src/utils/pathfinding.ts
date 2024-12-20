@@ -7,6 +7,7 @@
  */
 
 import PriorityQueue from "./classes/PriorityQueue.ts";
+import { Point } from "./index.ts";
 
 /**
  * A* pathfinding algorithm implementation.
@@ -203,6 +204,59 @@ export function dijkstra(
   return new Map(
     Array.from(distances.entries()).map(([k, v]) => [parseInt(k), v]),
   );
+}
+
+export function dijkstraGrid(
+  start: Point,
+  grid: string[][],
+): Map<string, number> {
+  const distances = new Map<string, number>();
+  const pq = new PriorityQueue<string>();
+  const visited = new Set<string>();
+
+  // Helper to convert point to string key
+  const toKey = (p: Point) => `${p[0]},${p[1]}`;
+
+  // Initialize
+  distances.set(toKey(start), 0);
+  pq.push(0, toKey(start));
+
+  while (!pq.isEmpty()) {
+    const currentKey = pq.pop()!;
+    if (visited.has(currentKey)) continue;
+    visited.add(currentKey);
+
+    // Convert key back to coordinates
+    const [x, y] = currentKey.split(",").map(Number);
+    const currentDist = distances.get(currentKey)!;
+
+    // Check all four directions
+    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    for (const [dx, dy] of directions) {
+      const newX = x + dx;
+      const newY = y + dy;
+
+      // Skip if out of bounds or wall
+      if (
+        newX < 0 || newX >= grid[0].length ||
+        newY < 0 || newY >= grid.length ||
+        grid[newY][newX] === "#"
+      ) continue;
+
+      const neighborKey = `${newX},${newY}`;
+      if (visited.has(neighborKey)) continue;
+
+      const distance = currentDist + 1; // Each step costs 1
+      const existingDist = distances.get(neighborKey) ?? Infinity;
+
+      if (distance < existingDist) {
+        distances.set(neighborKey, distance);
+        pq.push(distance, neighborKey);
+      }
+    }
+  }
+
+  return distances;
 }
 
 /**

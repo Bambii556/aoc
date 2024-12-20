@@ -11,7 +11,7 @@
  * @example
  * getAdjacent(1, 1) // Returns [[1,0], [2,1], [1,2], [0,1]]
  */
-const ADJACENT_COORDS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+export const ADJACENT_COORDS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 export function getAdjacent(x: number, y: number): [number, number][] {
   return ADJACENT_COORDS.map(([dx, dy]) => [x + dx, y + dy]);
 }
@@ -24,7 +24,7 @@ export function getAdjacent(x: number, y: number): [number, number][] {
  * getAdjacentWithDiagonals(1, 1)
  * // Returns [[0,0], [1,0], [2,0], [0,1], [2,1], [0,2], [1,2], [2,2]]
  */
-const DIAGONAL_COORDS = [
+export const DIAGONAL_COORDS = [
   [-1, -1],
   [0, -1],
   [1, -1],
