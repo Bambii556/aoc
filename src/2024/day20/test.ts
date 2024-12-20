@@ -2,7 +2,21 @@ import { DayTests, runTestPart } from "../../utils/test_utils.ts";
 import { day20 as solution } from "./index.ts";
 import { log } from "../../utils/index.ts";
 
-const input = ``;
+const input = `###############
+#...#...#.....#
+#.#.#.#.#.###.#
+#S#...#.#.#...#
+#######.#.#.###
+#######.#.#...#
+#######.#.###.#
+###..E#...#...#
+###.#######.###
+#...###...#...#
+#.#####.#.###.#
+#.#...#.#.#...#
+#.#.#.#.#.#.###
+#...#...#...###
+###############`;
 
 const tests: DayTests = {
   part1: [
