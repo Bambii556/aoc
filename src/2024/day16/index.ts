@@ -48,8 +48,8 @@ function solveMap(map: Grid): number {
   const end = findFirstOccurrencesIndexInGrid(map, "E")!;
 
   const reindeer: Reindeer = {
-    row: start[0],
-    col: start[1],
+    row: start.row,
+    col: start.col,
     direction: ">",
     cost: 0,
   };
@@ -69,7 +69,7 @@ function solveMap(map: Grid): number {
     seen.add(stateKey);
 
     // Check if we reached the end
-    if (current.col === end[1] && current.row === end[0]) {
+    if (current.col === end.col && current.row === end.row) {
       bestCost = Math.min(bestCost, current.cost);
       continue;
     }
@@ -108,11 +108,11 @@ function solveMapPart2(map: Grid): number {
   const end = findFirstOccurrencesIndexInGrid(map, "E")!;
 
   const reindeer: Reindeer = {
-    row: start[0],
-    col: start[1],
+    row: start.row,
+    col: start.col,
     direction: ">",
     cost: 0,
-    path: new Set([`${start[0]},${start[1]}`]),
+    path: new Set([`${start.row},${start.col}`]),
   };
 
   const queue: Reindeer[] = [reindeer];
@@ -134,7 +134,7 @@ function solveMapPart2(map: Grid): number {
     seen.set(stateKey, current.cost);
 
     // if end
-    if (current.col === end[1] && current.row === end[0]) {
+    if (current.col === end.col && current.row === end.row) {
       if (current.cost <= bestCost) {
         if (current.cost < bestCost) {
           bestCost = current.cost;

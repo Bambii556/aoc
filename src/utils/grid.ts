@@ -156,11 +156,11 @@ export function countOccurrencesInGrid<T>(grid: T[][], value: T): number {
 export function findFirstOccurrencesIndexInGrid<T>(
   grid: T[][],
   value: T,
-): [number, number] | null {
+): { row: number; col: number } | null {
   for (let row = 0; row < grid.length; row++) {
     for (let col = 0; col < grid[row].length; col++) {
       if (grid[row][col] === value) {
-        return [row, col];
+        return { row, col };
       }
     }
   }
