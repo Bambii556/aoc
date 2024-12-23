@@ -1,19 +1,23 @@
-import { DayTests, log, runTestPart } from "../../utils/test_utils.ts";
+import { log } from "../../utils/index.ts";
+import { DayTests, runTestPart } from "../../utils/test_utils.ts";
 import { day22 as solution } from "./index.ts";
 
-const input = ``;
+const input = `1
+10
+100
+2024`;
 
 const tests: DayTests = {
   part1: [
     {
       input,
-      expected: 0,
+      expected: 37327623,
     },
   ],
   part2: [
     {
       input,
-      expected: 0,
+      expected: 23,
     },
   ],
 };
