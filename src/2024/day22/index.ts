@@ -6,6 +6,7 @@ const MASK = (1 << 24) - 1;
 export const day22: Solution = {
   part1: async (input: string) => {
     const secrets = getInputLines(input).map(Number);
+
     let sum = 0;
 
     for (let secret of secrets) {
@@ -19,29 +20,53 @@ export const day22: Solution = {
   },
 
   part2: async (input: string) => {
-    const secrets = getInputLines(input).map(Number);
-    const targetSequence = [-2, 1, -1, 3]; // Known working sequence from example
-    let total = 0;
+    const startingSecrets = getInputLines(input).map(Number);
+    const patterns = new Map<string, number>();
 
-    // For debugging, use example inputs
-    const exampleSecrets = [1, 2, 3, 2024];
+    for (const startSecret of startingSecrets) {
+      const foundPatterns = new Set<string>();
+      let secret = startSecret;
+      let prices = [secret % 10];
+      let changes: number[] = [];
 
-    log("\nExample sequence test:");
-    for (const secret of exampleSecrets) {
-      const result = findSequence(secret, targetSequence);
-      if (result.found) {
-        log(
-          `Secret ${secret}: Found sequence at ${result.position}, price = ${result.price}`,
-        );
-        log(`  Prices: ${result.prices?.join(",")}`);
-        log(`  Changes: ${result.changes?.join(",")}`);
-        total += result.price!;
-      } else {
-        log(`Secret ${secret}: Sequence not found`);
+      // Generate sequence
+      for (let i = 0; i < 2000; i++) {
+        secret = transform(secret);
+        const price = secret % 10;
+        prices.push(price);
+        changes.push(price - prices[prices.length - 2]);
+
+        // Once we have enough changes, start looking for sequences
+        if (changes.length >= 4) {
+          // Get the last 4 changes
+          const lastFour = changes.slice(-4);
+          // Only consider changes in range -3 to 3
+          if (lastFour.every((c) => c >= -3 && c <= 3)) {
+            const key = lastFour.join(",");
+            if (!foundPatterns.has(key)) {
+              foundPatterns.add(key);
+              patterns.set(key, (patterns.get(key) ?? 0) + price);
+            }
+          }
+        }
       }
     }
 
-    return total;
+    // Find the sequence with highest total
+    let maxTotal = 0;
+    let bestPattern = "";
+
+    for (const [pattern, total] of patterns.entries()) {
+      if (total > maxTotal) {
+        maxTotal = total;
+        bestPattern = pattern;
+      }
+    }
+
+    log("\nBest pattern found:", bestPattern);
+    log("Total bananas:", maxTotal);
+
+    return maxTotal;
   },
 };
 
@@ -50,45 +75,4 @@ function transform(secret: number): number {
   secret = ((secret >> 5) ^ secret) & MASK;
   secret = ((secret << 11) ^ secret) & MASK;
   return secret;
-}
-
-function findSequence(startSecret: number, targetSequence: number[]): {
-  found: boolean;
-  position?: number;
-  price?: number;
-  prices?: number[];
-  changes?: number[];
-} {
-  let secret = startSecret;
-  const prices: number[] = [secret % 10];
-  const changes: number[] = [];
-
-  for (let i = 0; i < 2000; i++) {
-    secret = transform(secret);
-    const price = secret % 10;
-    prices.push(price);
-    changes.push(price - prices[prices.length - 2]);
-  }
-
-  // Look for target sequence
-  for (let i = 0; i < changes.length - 3; i++) {
-    let matches = true;
-    for (let j = 0; j < 4; j++) {
-      if (changes[i + j] !== targetSequence[j]) {
-        matches = false;
-        break;
-      }
-    }
-    if (matches) {
-      return {
-        found: true,
-        position: i,
-        price: prices[i + 4],
-        prices: prices.slice(i, i + 5),
-        changes: changes.slice(i, i + 4),
-      };
-    }
-  }
-
-  return { found: false };
 }
