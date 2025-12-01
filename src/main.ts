@@ -62,8 +62,8 @@ async function main() {
   const year = Deno.args[0] ? parseInt(Deno.args[0]) : 0;
   const day = Deno.args[1] ? parseInt(Deno.args[1]) : 0;
 
-  if (isNaN(year) || year < 1 || year > 2024) {
-    log("Please provide a valid year (2020-2024)");
+  if (isNaN(year) || year < 1 || year > 2025) {
+    log("Please provide a valid year (2020-2025)");
     Deno.exit(1);
   }
 

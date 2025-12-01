@@ -30,7 +30,7 @@ async function loadYear(year: number): Promise<YearSolutions> {
 }
 
 export async function loadAllSolutions(): Promise<Solutions> {
-  const years = [2023, 2024]; // Add more years as needed
+  const years = [2023, 2024, 2025]; // Add more years as needed
   const solutions: Solutions = {};
 
   for (const year of years) {
