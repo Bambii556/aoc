@@ -2,19 +2,22 @@ import { DayTests, runTestPart } from "../../utils/test_utils.ts";
 import { day6 as solution } from "./index.ts";
 import { log } from "../../utils/index.ts";
 
-const input = ``;
+const input = `123 328  51 64 
+ 45 64  387 23 
+  6 98  215 314
+*   +   *   +  `;
 
 const tests: DayTests = {
   part1: [
     {
       input,
-      expected: 0,
+      expected: 4277556,
     },
   ],
   part2: [
     {
       input,
-      expected: 0,
+      expected: 3263827,
     },
   ],
 };
